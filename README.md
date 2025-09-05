@@ -1,97 +1,204 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# 🐾 Momoy Pet Supplies – Mobile App
 
-# Getting Started
+This repository contains the React Native mobile app for **Momoy Pet Supplies**.  
+Backend and mobile code are managed in a single monorepo for easier collaboration.
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+---
 
-## Step 1: Start Metro
+## Prerequisites
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+Before running the commands, make sure you have:
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+- **Node.js** → version 18 or later
 
-```sh
-# Using npm
-npm start
-
-# OR using Yarn
-yarn start
+```bash
+  node -v
+  npm -v
+  npx -v
+  yarn -v
 ```
 
-## Step 2: Build and run your app
+Run this in the folder where you want your React Native project created:
 
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
-
-### Android
-
-```sh
-# Using npm
-npm run android
-
-# OR using Yarn
-yarn android
+```bash
+  npx @react-native-community/cli@latest init mobile --version 0.81.1
 ```
 
-### iOS
+- mobile → name of your project (change if needed)
 
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
+- --version 0.81.1 → pins React Native to the latest stable version
 
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
+This will create a new folder structure:
 
-```sh
-bundle install
+```bash
+  /mobile
+  ├── android/
+  ├── ios/
+  ├── app.json
+  ├── package.json
+  └── ...
 ```
 
-Then, and every time you update your native dependencies, run:
+Running the App on Android (without Android Studio)
 
-```sh
-bundle exec pod install
+1. Enable Developer Options + USB Debugging on your phone.
+
+2. Connect your phone via USB.
+
+3. Verify the connection:
+
+```bash
+  adb devices
 ```
 
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
+- If you see your device → connected.
 
-```sh
-# Using npm
-npm run ios
+4. Start the Metro bundler:
 
-# OR using Yarn
-yarn ios
+- NPM
+
+```bash
+  npm start
 ```
 
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
+- NPX
 
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
+```bash
+  npx react-native start
+```
 
-## Step 3: Modify your app
+- YARN
 
-Now that you have successfully run the app, let's make changes!
+```bash
+  yarn start
+```
 
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
+5. In another terminal, install & run the app:
 
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
+- NPM
 
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
+```bash
+  npm run android
+```
 
-## Congratulations! :tada:
+- NPX
 
-You've successfully run and modified your React Native App. :partying_face:
+```bash
+  npx react-native run-android
+```
 
-### Now what?
+- YARN
 
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
+```bash
+  yarn android
+```
 
-# Troubleshooting
+---
 
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
+## Set up Tabs Navigations & Folders
 
-# Learn More
+Step 1: Create folders inside
 
-To learn more about React Native, take a look at the following resources:
+```bash
+  mobile/
+  ├── src/
+  │   ├── components/     # Reusable UI components (buttons, inputs, cards, etc.)
+  │   ├── screens/        # Each screen of the app (Home, Products, Cart, etc.)
+  │   ├── navigation/     # Navigation (stack, tabs, drawer)
+  │   ├── hooks/          # Custom React hooks (e.g. useAuth, useProducts)
+  │   ├── context/        # Context providers (auth, theme, cart)
+  │   └── services/       # Helpers, constants, API calls
+  └── App.tsx
+```
 
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+Step 2: Install Dependencies
+
+```bash
+  npm install axios
+  npm install react-native-screens
+  npm install react-native-reanimated
+```
+
+Step 3: Install Navigation (Tabs and Stack)
+
+```bash
+  npm install @react-navigation/native
+```
+
+- Bottom Tabs
+
+```bash
+  npm install @react-navigation/bottom-tabs
+```
+
+- Stack
+
+```bash
+  npm install @react-navigation/native-stack
+```
+
+## Set up dotenv
+
+1. Install dotenv
+
+```bash
+  npm install react-native-dotenv
+```
+
+2. Create a **.env** file
+
+```ini
+  API_KEYS=copypastehere
+```
+
+3. Update **babel.config.ts** to include:
+
+```js
+module.exports = {
+  presets: ['module:metro-react-native-babel-preset'],
+
+  // Add this plugins
+  plugins: [
+    [
+      'module:react-native-dotenv',
+      {
+        moduleName: '@env',
+        path: '.env',
+      },
+    ],
+  ],
+};
+```
+
+4. Create a type declaration file
+
+```bash
+  touch env.d.ts
+```
+
+5. Add this content to **env.d.ts**
+
+```ts
+declare module '@env' {
+  export const API_URL: string;
+  // add other variables from your .env file if you have more
+}
+```
+
+6. Import your code in **./src/services/api.ts**
+
+```ts
+import { API_URL } from '@env';
+```
+
+7. Restart\Clear Metro Bundler
+
+```bash
+  npm start -c
+  # or
+  npx react-native start --reset-cache
+```
+
+--
+
+android:screenOrientation="portrait"
