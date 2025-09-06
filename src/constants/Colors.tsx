@@ -1,0 +1,18 @@
+export default {
+  white: '#ffffff',
+  gray: '#D1D1D1',
+  light: '#E3E3E3',
+  mediumGray: '#6E6E6E',
+  lightGray: '#F5F5F5',
+  snowGray: '#F5F3F0',
+  softCream: '#FFF3E0',
+  paleYellow: '#FFEFC6',
+  beige: '#FFE5B4',
+  lightTangerine: '#FAAF5E',
+  darkTangerine: '#F99A34',
+  peachOrange: '#FAAF5E',
+  pumpkin: '#e2953e',
+  coffeeBrown: '#976935',
+  orange: '#FF8C42',
+  charcoal: '#212529',
+};
