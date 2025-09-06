@@ -1,7 +1,6 @@
 # 🐾 Momoy Pet Supplies – Mobile App
 
-This repository contains the React Native mobile app for **Momoy Pet Supplies**.  
-Backend and mobile code are managed in a single monorepo for easier collaboration.
+This repository contains the React Native mobile app for **Momoy Pet Supplies**.
 
 ---
 
