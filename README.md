@@ -218,7 +218,7 @@ import { API_URL } from '@env';
               ├── AndroidManifest.xml
 ```
 
-3. Paste it inside of the <Activity android:screenOrientation="portrait">
+3. Paste it inside of this file
 
 ```xml
   <manifest xmlns:android="http://schemas.android.com/apk/res/android">

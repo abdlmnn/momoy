@@ -10,8 +10,20 @@ import SplashScreen from './src/components/SplashScreen';
 import Colors from './src/constants/Colors';
 import StackNavigator from './src/navigation/StackNavigator';
 import Provider from './src/context/Context';
+
 function App() {
-  const isDarkMode = useColorScheme() === 'dark';
+  return (
+    <SafeAreaProvider
+      style={{ backgroundColor: Colors.lightTangerine, flex: 1 }}
+    >
+      <AppContent />
+    </SafeAreaProvider>
+  );
+}
+
+function AppContent() {
+  const safeAreaInsets = useSafeAreaInsets();
+
   const [isLoading, setIsLoading] = useState(true);
 
   if (isLoading) {
@@ -31,33 +43,10 @@ function App() {
   }
 
   return (
-    <SafeAreaProvider>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <AppContent />
-    </SafeAreaProvider>
+    <Provider safeAreaInsets={safeAreaInsets}>
+      <StackNavigator />
+    </Provider>
   );
 }
-
-function AppContent() {
-  const safeAreaInsets = useSafeAreaInsets();
-
-  return (
-    <View style={{ backgroundColor: Colors.lightTangerine, flex: 1 }}>
-      {/* <NewAppScreen
-        templateFileName="App.tsx"
-        safeAreaInsets={safeAreaInsets}
-      /> */}
-      <Provider safeAreaInsets={safeAreaInsets}>
-        <StackNavigator />
-      </Provider>
-    </View>
-  );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});
 
 export default App;
