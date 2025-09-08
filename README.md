@@ -94,7 +94,7 @@ Running the App on Android (without Android Studio)
 
 ---
 
-## Set up Tabs Navigations & Folders
+## Installation Dependencies & Folder Structure
 
 Step 1: Create folders inside
 
@@ -250,3 +250,111 @@ import { API_URL } from '@env';
     </application>
 </manifest>
 ```
+
+---
+
+## APK File
+
+---
+
+## Git
+
+Instead of using main to push all the changes create a new branch develop, it's for active work and keep the main stable.
+
+1. Create **develop** branch from main
+
+```bash
+  git checkout -b develop main
+
+  git push origin develop
+```
+
+Now you have:
+
+- **main** -> contains your currnet latest code.
+- **develop** -> will be used for ongoing work.
+
+Now your repo has:
+
+- **main** -> stable branch.
+- **develop** -> working branch for all new changes.
+
+Stay on **develop** for active coding
+
+```bash
+  git checkout develop
+```
+
+2. Create a feature or design branch
+
+```bash
+  git checkout -b design/cart-ui
+```
+
+if you're on another branch say (main) but want to base your new branch on **develop**:
+
+```bash
+  git checkout -b design/cart-ui develop
+```
+
+3. Make changes -> commit -> push
+
+- Make Changes
+
+```bash
+  git add .
+```
+
+- Commit
+
+```bash
+  git commit -m "design: added cart screen UI"
+```
+
+- Push
+
+```bash
+  git push origin desgin/cart-ui
+```
+
+4. Merge that branch back into **develop** when finished
+
+- Switch to **develop** branch
+
+```bash
+  git checkout develop
+```
+
+- Merge your **design/cart-ui** branch to your **develop** branch
+
+```bash
+  git merge design/cart-ui
+```
+
+- Push to your **develop** branch
+
+```bash
+  git push origin develop
+```
+
+5. When everything in **develop** is tested and ready for release, update **main**
+
+- Switch to **main**
+
+```bash
+  git checkout main
+```
+
+- Merge your **develop** branch to your **main**
+
+```bash
+  git merge develop
+```
+
+- Push to your **main**
+
+```bash
+  git push origin main
+```
+
+---
