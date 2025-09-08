@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useContext } from 'react';
 import {
   View,
   Text,
@@ -10,14 +10,13 @@ import {
   Animated,
   Pressable,
 } from 'react-native';
-import Colors from '../constants/Colors';
-import Images from '../constants/Images';
-
+import { StyleWelcome } from '../styles/WelcomeScreen';
 import { SignupButton, LoginButton, GuestButton } from '../components/Button';
+import { Context } from '../context/Context';
 
-const { width, height } = Dimensions.get('window');
+export default function WelcomeScreen({ navigation }: any) {
+  const { Images, Colors } = useContext(Context)!;
 
-const WelcomeScreen = ({ navigation }: any) => {
   const moveAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -38,14 +37,14 @@ const WelcomeScreen = ({ navigation }: any) => {
   }, []);
 
   return (
-    <View style={styles.container}>
+    <View style={StyleWelcome.container}>
       <StatusBar
         barStyle="light-content"
         backgroundColor={Colors.lightTangerine}
       />
 
       <TouchableOpacity
-        style={styles.closeButton}
+        style={StyleWelcome.closeButton}
         onPress={() =>
           navigation.reset({
             index: 0,
@@ -53,35 +52,38 @@ const WelcomeScreen = ({ navigation }: any) => {
           })
         }
       >
-        <Text style={styles.closeText}>✕</Text>
+        <Text style={StyleWelcome.closeText}>✕</Text>
       </TouchableOpacity>
 
-      <View style={styles.topSection}>
+      <View style={StyleWelcome.topSection}>
         <Animated.Image
           source={Images.food}
-          style={[styles.image, { transform: [{ translateY: moveAnim }] }]}
+          style={[
+            StyleWelcome.image,
+            { transform: [{ translateY: moveAnim }] },
+          ]}
           resizeMode="contain"
         />
       </View>
 
-      <View style={styles.bottomSection}>
-        <View style={styles.textSection}>
-          <Text style={styles.topBold}>Sign up or Log in</Text>
+      <View style={StyleWelcome.bottomSection}>
+        <View style={StyleWelcome.textSection}>
+          <Text style={StyleWelcome.topBold}>Sign up or Log in</Text>
 
-          <Text style={styles.pText}>
+          <Text style={StyleWelcome.pText}>
             Select your preferred method to continue
           </Text>
         </View>
 
-        <View style={styles.buttonSection}>
+        <View style={StyleWelcome.buttonSection}>
           <SignupButton onPress={() => navigation.navigate('Signup')} />
 
           <LoginButton onPress={() => navigation.navigate('Login')} />
 
-          <View style={styles.lineContainer}>
-            <View style={styles.line} />
-            <Text style={styles.text}>or</Text>
-            <View style={styles.line} />
+          <View style={StyleWelcome.lineContainer}>
+            <View style={StyleWelcome.line} />
+            <Text style={StyleWelcome.text}>or</Text>
+            <View style={StyleWelcome.line} />
           </View>
 
           <GuestButton
@@ -93,108 +95,13 @@ const WelcomeScreen = ({ navigation }: any) => {
             }
           />
 
-          <Text style={styles.policyText}>
+          <Text style={StyleWelcome.policyText}>
             By continuing, you agree to our{' '}
-            <Text style={styles.underlineText}>Terms and Conditions</Text> and{' '}
-            <Text style={styles.underlineText}>Privacy Policy</Text>
+            <Text style={StyleWelcome.underlineText}>Terms and Conditions</Text>{' '}
+            and <Text style={StyleWelcome.underlineText}>Privacy Policy</Text>
           </Text>
         </View>
       </View>
     </View>
   );
-};
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: Colors.lightTangerine,
-  },
-
-  closeButton: {
-    position: 'absolute',
-    top: 2,
-    left: 10,
-    zIndex: 10,
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  closeText: {
-    fontSize: 18,
-    color: Colors.white,
-    fontWeight: 'bold',
-  },
-
-  topSection: {
-    flex: 1.05,
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-    paddingBottom: 20,
-  },
-  image: {
-    height: width * 0.7,
-    width: height * 0.5,
-  },
-
-  bottomSection: {
-    flex: 1,
-    backgroundColor: Colors.white,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    paddingHorizontal: 20,
-    paddingVertical: 15,
-  },
-
-  textSection: {
-    gap: 5,
-  },
-
-  topBold: {
-    fontWeight: '800',
-    fontSize: 18,
-    fontFamily: 'Poppins',
-    color: Colors.charcoal,
-  },
-
-  pText: {
-    fontSize: 12,
-    color: Colors.charcoal,
-  },
-
-  buttonSection: {
-    flex: 1,
-    gap: 15,
-    justifyContent: 'flex-end',
-  },
-
-  lineContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    width: '100%',
-  },
-  line: {
-    flex: 1,
-    height: 1,
-    backgroundColor: Colors.light,
-  },
-  text: {
-    marginHorizontal: 10,
-    color: Colors.mediumGray,
-    opacity: 0.4,
-    fontSize: 14,
-    fontWeight: '600',
-  },
-
-  policyText: {
-    color: Colors.charcoal,
-  },
-  underlineText: {
-    textDecorationLine: 'underline',
-    color: Colors.charcoal,
-    fontWeight: '600',
-  },
-});
-
-export default WelcomeScreen;
+}

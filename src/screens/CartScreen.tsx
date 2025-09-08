@@ -3,7 +3,7 @@ import React, { useContext } from 'react';
 import { Context } from '../context/Context';
 
 export default function CartScreen({ navigation }: any) {
-  const { isLoggedIn } = useContext(Context);
+  const { isLoggedIn } = useContext(Context)!;
   console.log('Auth:', isLoggedIn);
   return (
     <View
@@ -19,5 +19,3 @@ export default function CartScreen({ navigation }: any) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({});

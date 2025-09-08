@@ -1,5 +1,6 @@
-import { StyleSheet, Text, View, Button } from 'react-native';
+import { Text, View, Button } from 'react-native';
 import React, { useContext } from 'react';
+import { Context } from '../context/Context';
 
 export default function LoginScreen({ navigation }: any) {
   return (
@@ -8,5 +9,3 @@ export default function LoginScreen({ navigation }: any) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({});
