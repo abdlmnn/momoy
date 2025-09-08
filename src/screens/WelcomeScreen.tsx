@@ -11,6 +11,7 @@ import {
   Pressable,
 } from 'react-native';
 import { StyleWelcome } from '../styles/WelcomeScreen';
+
 import { SignupButton, LoginButton, GuestButton } from '../components/Button';
 import { Context } from '../context/Context';
 

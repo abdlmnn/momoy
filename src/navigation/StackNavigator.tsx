@@ -21,13 +21,10 @@ export default function StackNavigator() {
             <Stack.Screen name="Welcome" component={WelcomeScreen} />
             <Stack.Screen name="Signup" component={SignupScreen} />
             <Stack.Screen name="Login" component={LoginScreen} />
-            <Stack.Screen name="Index" component={TabNavigator} />
           </>
-        ) : (
-          <>
-            <Stack.Screen name="Index" component={TabNavigator} />
-          </>
-        )}
+        ) : null}
+
+        <Stack.Screen name="Index" component={TabNavigator} />
       </Stack.Navigator>
     </NavigationContainer>
   );
