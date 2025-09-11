@@ -20,7 +20,7 @@ type ContextType = {
 export const Context = createContext<ContextType | undefined>(undefined);
 
 export default function Provider({ children }: any) {
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const global = { isLoggedIn, setIsLoggedIn, Colors, Images };
 
