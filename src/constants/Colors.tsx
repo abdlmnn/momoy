@@ -14,5 +14,6 @@ export default {
   pumpkin: '#e2953e',
   coffeeBrown: '#976935',
   orange: '#FF8C42',
+  newOrage: '#ff934b',
   charcoal: '#212529',
 };

@@ -13,7 +13,8 @@ import {
 import { StyleWelcome } from '../styles/WelcomeScreen';
 
 import { SignupButton, LoginButton, GuestButton } from '../components/Button';
-import { Context } from '../context/Context';
+
+import { Context } from '../contexts/Context';
 
 export default function WelcomeScreen({ navigation }: any) {
   const { Images, Colors } = useContext(Context)!;

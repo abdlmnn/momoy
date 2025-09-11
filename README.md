@@ -253,6 +253,47 @@ import { API_URL } from '@env';
 
 ---
 
+## Geolocation Service
+
+- Package to check and request location permission
+
+```bash
+  npm install @react-native-community/geolocation@latest
+  npm install react-native-permissions
+  npm install react-native-android-location-enabler
+```
+
+- Permisison in **AndroidManifest.xml**
+
+1. Go to **android/app/src/main/AndroidManifest.xml**
+2. Copy and paste this
+
+```xml
+  <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+  <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+  <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+```
+
+**ACCESS_FINE_LOCATION** -> precise location
+**ACCESS_COARSE_LOCATION** -> approximate location
+**ACCESS_BACKGROUND_LOCATION** -> background location (Android 10+ required)
+
+- Import this in **AllowLocationScreen**
+
+```tsx
+import { Platform } from 'react-native';
+import Geolocation from '@react-native-community/geolocation';
+import {
+  check,
+  request,
+  PERMISSIONS,
+  RESULTS,
+  openSettings,
+} from 'react-native-permissions';
+```
+
+---
+
 ## APK File
 
 ---

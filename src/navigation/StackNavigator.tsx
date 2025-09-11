@@ -5,8 +5,8 @@ import WelcomeScreen from '../screens/WelcomeScreen';
 import LoginScreen from '../auth/LoginScreen';
 import SignupScreen from '../auth/SignupScreen';
 import TabNavigator from '../navigation/TabNavigator';
-import { Context } from '../context/Context';
 import { NavigationContainer } from '@react-navigation/native';
+import { Context } from '../contexts/Context';
 
 const Stack = createNativeStackNavigator();
 

@@ -9,7 +9,7 @@ import {
 import SplashScreen from './src/components/SplashScreen';
 import Colors from './src/constants/Colors';
 import StackNavigator from './src/navigation/StackNavigator';
-import Provider from './src/context/Context';
+import Provider from './src/contexts/Context';
 
 function App() {
   return (

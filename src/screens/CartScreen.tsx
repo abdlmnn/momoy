@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native';
 import React, { useContext } from 'react';
-import { Context } from '../context/Context';
+import { Context } from '../contexts/Context';
 
 export default function CartScreen({ navigation }: any) {
   const { isLoggedIn } = useContext(Context)!;
