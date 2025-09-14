@@ -28,14 +28,14 @@ export default function AllowLocationScreen() {
         // API for Google Map
       },
       err => {
-        console.warn('Quick location failed', err);
+        console.warn('User location failed', err);
       },
       { enableHighAccuracy: false, timeout: 10000, maximumAge: 5000 },
     );
 
     const watchId = Geolocation.watchPosition(
       pos => {
-        console.log('Watching for precise location:', pos);
+        console.log('Precise location:', pos);
 
         const { latitude, longitude, accuracy } = pos.coords;
 
@@ -169,7 +169,7 @@ export default function AllowLocationScreen() {
             pressed && StyleAllowLocation.buttonPressed,
           ]}
         >
-          <Text style={StyleAllowLocation.buttonText}>Enable Location</Text>
+          <Text style={StyleAllowLocation.buttonText}>Continue</Text>
         </Pressable>
       </View>
     </View>

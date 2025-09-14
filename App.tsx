@@ -43,7 +43,7 @@ function AppContent() {
   }
 
   return (
-    <Provider safeAreaInsets={safeAreaInsets}>
+    <Provider>
       <StackNavigator />
     </Provider>
   );

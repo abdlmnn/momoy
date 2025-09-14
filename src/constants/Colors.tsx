@@ -16,4 +16,5 @@ export default {
   orange: '#FF8C42',
   newOrage: '#ff934b',
   charcoal: '#212529',
+  red: '#FF4526',
 };

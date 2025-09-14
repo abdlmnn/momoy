@@ -1,6 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native';
 import React, { useContext } from 'react';
 import { Context } from '../contexts/Context';
+import Colors from '../constants/Colors';
 
 export default function CartScreen({ navigation }: any) {
   const { isLoggedIn } = useContext(Context)!;
@@ -11,7 +12,7 @@ export default function CartScreen({ navigation }: any) {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: 'red',
+        backgroundColor: Colors.paleYellow,
       }}
     >
       <Text>CartScreen</Text>

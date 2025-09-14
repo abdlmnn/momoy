@@ -7,6 +7,9 @@ import SignupScreen from '../auth/SignupScreen';
 import TabNavigator from '../navigation/TabNavigator';
 import { NavigationContainer } from '@react-navigation/native';
 import { Context } from '../contexts/Context';
+import SendEmailScreen from '../auth/SendEmailScreen';
+import VerifyEmailScreen from '../auth/VerifyEmailScreen';
+import AllowLocationScreen from '../components/AllowLocationScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -19,7 +22,16 @@ export default function StackNavigator() {
         {!isLoggedIn ? (
           <>
             <Stack.Screen name="Welcome" component={WelcomeScreen} />
+
             <Stack.Screen name="Signup" component={SignupScreen} />
+            <Stack.Screen name="SendEmail" component={SendEmailScreen} />
+            <Stack.Screen name="VerifyEmail" component={VerifyEmailScreen} />
+
+            <Stack.Screen
+              name="AllowLocation"
+              component={AllowLocationScreen}
+            />
+
             <Stack.Screen name="Login" component={LoginScreen} />
           </>
         ) : null}
