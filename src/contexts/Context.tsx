@@ -42,7 +42,7 @@ export default function Provider({ children }: any) {
     password: '',
   });
 
-  console.log('Signup FormData: ', formData);
+  // console.log('Signup FormData: ', formData);
 
   const global: ContextType = {
     isLoggedIn,

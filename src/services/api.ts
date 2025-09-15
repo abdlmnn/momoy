@@ -2,26 +2,6 @@ import axios from 'axios';
 import { API_URL } from '@env';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-// export async function getProducts() {
-//   try {
-//     const res = await axios.get(`${API_URL}/products/`);
-//     console.log('Fetched Products:', res.data);
-//     return res.data;
-//   } catch (error) {
-//     console.log('Error Fetching Products:', error);
-//   }
-// }
-
-// export async function getCategories() {
-//   try {
-//     const res = await axios.get(`${API_URL}/categories/`);
-//     console.log('Fetched Categories:', res.data);
-//     return res.data;
-//   } catch (error) {
-//     console.log('Error Fetching Categories:', error);
-//   }
-// }
-
 const api = axios.create({
   baseURL: API_URL,
   headers: {
@@ -31,7 +11,7 @@ const api = axios.create({
 
 export async function getProducts() {
   try {
-    const res = await api.get(`/products/`);
+    const res = await api.get(`/api/products/`);
     console.log('Fetched Products:', res.data);
     return res.data;
   } catch (error) {
@@ -41,7 +21,7 @@ export async function getProducts() {
 
 export async function getCategories() {
   try {
-    const res = await api.get(`/categories/`);
+    const res = await api.get(`/api/categories/`);
     console.log('Fetched Categories:', res.data);
     return res.data;
   } catch (error) {

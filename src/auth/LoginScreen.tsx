@@ -14,8 +14,8 @@ import { WEB_CLIENT_ID } from '@env';
 GoogleSignin.configure({
   webClientId: WEB_CLIENT_ID,
   offlineAccess: true,
-  scopes: ['https://www.googleapis.com/auth/drive.readonly'],
-  // scopes: ['email', 'profile'],
+  // scopes: ['https://www.googleapis.com/auth/drive.readonly'],
+  scopes: ['email', 'profile'],
 });
 
 export default function LoginScreen({ navigation }: any) {
@@ -25,6 +25,8 @@ export default function LoginScreen({ navigation }: any) {
       await GoogleSignin.hasPlayServices({
         showPlayServicesUpdateDialog: true,
       });
+
+      await GoogleSignin.signOut();
 
       // Perform Google Sign-In
       const userInfo = await GoogleSignin.signIn();
@@ -38,6 +40,8 @@ export default function LoginScreen({ navigation }: any) {
       if (res.data.access) {
         await AsyncStorage.setItem('accessToken', res.data.access);
         await AsyncStorage.setItem('refreshToken', res.data.refresh);
+
+        navigation.replace('Index');
       } else {
         console.log('Login failed:', res.data);
       }
