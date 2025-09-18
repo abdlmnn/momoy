@@ -9,9 +9,11 @@ export const StyleSignup = StyleSheet.create({
   topButton: {
     paddingHorizontal: 20,
     paddingVertical: 20,
+    // borderWidth: 1,
   },
   botButton: {
     padding: 20,
+    backgroundColor: Colors.white,
   },
   topShadow: {
     position: 'absolute',
@@ -92,6 +94,14 @@ export const StyleSignup = StyleSheet.create({
     paddingHorizontal: 12,
     position: 'relative',
   },
+  inputContainer2: {
+    borderWidth: 1,
+    borderRadius: 10,
+    height: 50,
+    justifyContent: 'center',
+    paddingHorizontal: 12,
+    position: 'relative',
+  },
   input: {
     color: Colors.charcoal,
   },
@@ -120,5 +130,21 @@ export const StyleSignup = StyleSheet.create({
   },
   buttonPressed2: {
     backgroundColor: Colors.light,
+  },
+
+  prefixBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    backgroundColor: Colors.white,
+    borderWidth: 1,
+    borderColor: Colors.gray,
+    borderRadius: 10,
+    height: 50,
+  },
+  prefixText: {
+    fontSize: 14,
+    // fontWeight: '500',
+    color: Colors.charcoal,
   },
 });

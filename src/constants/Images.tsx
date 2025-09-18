@@ -5,4 +5,6 @@ export default {
   location: require('../../assets/images/location.png'),
   deliveryLocation: require('../../assets/images/deliverylocation.png'),
   pinLocation: require('../../assets/images/pinlocation.png'),
+  profile: require('../../assets/images/profile.png'),
+  philippineFlag: require('../../assets/images/philippines.png'),
 };

@@ -20,9 +20,12 @@ export default function AllowLocationScreen() {
         const { latitude, longitude, accuracy } = pos.coords;
 
         console.log(`
+
           User location:
-          Lat: ${latitude} 
-          Lon: ${longitude} 
+            
+            Lat: ${latitude} 
+            Lon: ${longitude} 
+
           `);
 
         // API for Google Map
@@ -35,16 +38,18 @@ export default function AllowLocationScreen() {
 
     const watchId = Geolocation.watchPosition(
       pos => {
-        console.log('Precise location:', pos);
-
         const { latitude, longitude, accuracy } = pos.coords;
 
         if (accuracy <= 30) {
           console.log(`
-          User location:
-          Lat: ${latitude} 
-          Lon: ${longitude} 
+
+            Precise location:
+
+              Lat: ${latitude} 
+              Lon: ${longitude} 
+
           `);
+
           Geolocation.clearWatch(watchId);
         }
       },
@@ -74,10 +79,6 @@ export default function AllowLocationScreen() {
       }
     } catch (err) {
       console.log('Not enable GPS', err);
-      Alert.alert(
-        'GPS Required',
-        'Please enable location services to continue.',
-      );
     }
   };
 

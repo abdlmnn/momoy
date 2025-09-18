@@ -2,8 +2,24 @@ import axios from 'axios';
 import { API_URL } from '@env';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+export const apiAuth = (token: string) =>
+  axios.create({
+    baseURL: `${API_URL}/auth`,
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
 const api = axios.create({
   baseURL: API_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+const apiGoogle = axios.create({
+  baseURL: `${API_URL}/auth`,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -29,18 +45,18 @@ export async function getCategories() {
   }
 }
 
-api.interceptors.request.use(async config => {
-  const token = await AsyncStorage.getItem('accessToken');
+apiGoogle.interceptors.request.use(async config => {
+  const token = await AsyncStorage.getItem('access');
 
   // console.log(token);
 
-  if (token && !config.url?.includes('/auth/google/')) {
+  if (token && !config.url?.includes('/google/')) {
     config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
 });
 
-api.interceptors.response.use(
+apiGoogle.interceptors.response.use(
   response => response,
   async error => {
     const originalRequest = error.config;
@@ -51,7 +67,7 @@ api.interceptors.response.use(
 
       if (refresh) {
         try {
-          const res = await axios.post(`${API_URL}/auth/token/refresh/`, {
+          const res = await axios.post(`${API_URL}/token/refresh/`, {
             refresh,
           });
           const newAccess = res.data.access;
@@ -73,5 +89,10 @@ api.interceptors.response.use(
     return Promise.reject(error);
   },
 );
+
+export const saveTokens = async (access: string, refresh: string) => {
+  await AsyncStorage.setItem('access', access);
+  await AsyncStorage.setItem('refresh', refresh);
+};
 
 export default api;

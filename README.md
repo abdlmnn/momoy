@@ -399,3 +399,5 @@ if you're on another branch say (main) but want to base your new branch on **dev
 ```
 
 ---
+
+## npm install react-native-send-intent@latest

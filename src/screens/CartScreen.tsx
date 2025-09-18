@@ -5,7 +5,7 @@ import Colors from '../constants/Colors';
 
 export default function CartScreen({ navigation }: any) {
   const { isLoggedIn } = useContext(Context)!;
-  console.log('Auth:', isLoggedIn);
+  // console.log('Auth:', isLoggedIn);
   return (
     <View
       style={{

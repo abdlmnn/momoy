@@ -1,159 +1,129 @@
-import React, { useState, useEffect, useRef } from 'react';
 import {
-  View,
-  Text,
-  TextInput,
-  Pressable,
   StyleSheet,
   Animated,
-  Keyboard,
+  Text,
+  View,
+  TouchableOpacity,
   TouchableWithoutFeedback,
+  Pressable,
+  Image,
+  TextInput,
+  TextStyle,
+  Keyboard,
 } from 'react-native';
+import React, { useEffect, useRef, useState, useContext } from 'react';
+import { styleInputs } from '../../styles/Inputs';
+import { StyleSignup } from '../../styles/SignupScreen';
+import Images from '../../constants/Images';
+import Colors from '../../constants/Colors';
 
-export default function SignupScreen({ navigation }: any) {
-  const [email, setEmail] = useState('');
+interface InputProps {
+  label: string;
+  value: string;
+  onChangeText: (text: string) => void;
+  keyboardType?: 'default' | 'email-address' | 'phone-pad' | 'numeric';
+  autoCapitalize?: 'none' | 'sentences' | 'words' | 'characters';
+  submitted?: boolean;
+  isValid?: boolean;
+}
+
+export default function Inputs({
+  label,
+  value,
+  onChangeText,
+  keyboardType = 'default',
+  autoCapitalize = 'none',
+  submitted = false,
+  isValid = true,
+}: InputProps) {
   const [isFocused, setIsFocused] = useState(false);
 
-  const labelAnim = useRef(new Animated.Value(email ? 1 : 0)).current;
+  const labelAnim = useRef(new Animated.Value(value ? 1 : 0)).current;
 
   useEffect(() => {
     Animated.timing(labelAnim, {
-      toValue: isFocused || email ? 1 : 0,
+      toValue: isFocused || value ? 1 : 0,
       duration: 150,
       useNativeDriver: false,
     }).start();
-  }, [isFocused, email]);
+  }, [isFocused, value]);
 
-  const labelStyle = {
-    position: 'absolute',
-    left: 12,
-    top: labelAnim.interpolate({
-      inputRange: [0, 1],
-      outputRange: [12, -10], // moves up when focused
-    }),
-    fontSize: 16,
-    color: labelAnim.interpolate({
-      inputRange: [0, 1],
-      outputRange: ['#999', '#000'],
-    }),
-    backgroundColor: '#fff',
-    paddingHorizontal: 4,
-  };
+  const showError = submitted && !isValid;
 
+  let borderColor = Colors.gray;
+  let labelColor = Colors.mediumGray;
+
+  if (showError) {
+    borderColor = Colors.red;
+    labelColor = Colors.red;
+  } else if (isFocused || (submitted && isValid)) {
+    borderColor = Colors.charcoal;
+    labelColor = Colors.charcoal;
+  }
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <View style={styles.container}>
-        <Pressable
-          style={styles.closeButton}
-          onPress={() => navigation.goBack()}
+    <View
+      style={[
+        StyleSignup.inputContainer2,
+        {
+          borderColor,
+        },
+      ]}
+    >
+      <Animated.Text
+        style={{
+          position: 'absolute',
+          left: 12,
+          backgroundColor: Colors.white,
+          paddingHorizontal: 4,
+          top: labelAnim.interpolate({
+            inputRange: [0, 1],
+            outputRange: [14, -10],
+          }),
+          color: labelAnim.interpolate({
+            inputRange: [0, 1],
+            outputRange: [Colors.mediumGray, labelColor],
+          }),
+        }}
+      >
+        {label}
+      </Animated.Text>
+      <TextInput
+        onFocus={() => setIsFocused(true)}
+        onBlur={() => setIsFocused(false)}
+        onChangeText={text => onChangeText(text)}
+        value={value}
+        style={[StyleSignup.input]}
+        keyboardType={keyboardType}
+        autoCapitalize={autoCapitalize}
+      />
+
+      {showError && (
+        <Text
+          style={{
+            color: Colors.red,
+            fontSize: 10,
+            fontWeight: '700',
+            position: 'absolute',
+            left: 14,
+            bottom: -20,
+          }}
         >
-          <Text style={{ fontSize: 28, color: '#333' }}>X</Text>
-        </Pressable>
-
-        <View style={styles.iconContainer}>
-          <Text style={styles.titleText}>Email</Text>
-        </View>
-
-        <Text style={styles.heading}>What's your email?</Text>
-        <Text style={styles.subHeading}>
-          We'll check if you have an account
+          Enter a valid {label.toLowerCase()}
         </Text>
-
-        <View
-          style={[
-            styles.inputContainer,
-            { borderColor: isFocused ? '#000' : '#ccc' }, // <-- border color changes
-          ]}
-        >
-          <Animated.Text style={labelStyle}>Email</Animated.Text>
-          <TextInput
-            style={styles.input}
-            value={email}
-            onChangeText={setEmail}
-            onFocus={() => setIsFocused(true)}
-            onBlur={() => setIsFocused(false)}
-            keyboardType="email-address"
-            autoCapitalize="none"
-          />
-        </View>
-
-        {/* Continue button */}
-        <Pressable
-          style={styles.continueButton}
-          onPress={() => console.log(email)}
-        >
-          <Text style={styles.continueText}>Continue</Text>
-        </Pressable>
-      </View>
-    </TouchableWithoutFeedback>
+      )}
+    </View>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    paddingHorizontal: 24,
-    paddingTop: 40,
-  },
-  closeButton: {
-    position: 'absolute',
-    top: 40,
-    left: 24,
-    zIndex: 10,
-  },
-  iconContainer: {
-    alignItems: 'center',
-    marginTop: 80,
-    marginBottom: 24,
-  },
-  titleText: {
-    fontSize: 48,
-    fontWeight: 'bold',
-    color: '#FF6F61',
-  },
-  heading: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 8,
-    color: '#333',
-  },
-  subHeading: {
-    fontSize: 14,
-    color: '#666',
-    textAlign: 'center',
-    marginBottom: 32,
-  },
-  inputContainer: {
-    borderWidth: 1,
-    borderRadius: 8,
-    height: 50,
-    justifyContent: 'center',
-    paddingHorizontal: 12,
-    marginBottom: 32,
-    position: 'relative',
-  },
-  input: {
-    height: 50,
-    fontSize: 16,
-    color: '#000',
-  },
-  continueButton: {
-    backgroundColor: '#FF6F61',
-    borderRadius: 8,
-    paddingVertical: 16,
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    shadowOffset: { width: 0, height: -2 },
-    elevation: 3,
-    marginBottom: 20,
-  },
-  continueText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-});
+export function Prefix() {
+  return (
+    <View style={StyleSignup.prefixBox}>
+      <Image
+        source={Images.philippineFlag}
+        style={{ width: 30, height: 30, marginRight: 8 }}
+        resizeMode="contain"
+      />
+      <Text style={StyleSignup.prefixText}>+63</Text>
+    </View>
+  );
+}

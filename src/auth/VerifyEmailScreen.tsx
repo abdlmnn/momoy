@@ -22,22 +22,93 @@ import Colors from '../constants/Colors';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { Context } from '../contexts/Context';
 
+import { API_URL } from '@env';
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { saveTokens } from '../services/api';
+
+const apiCheckEmail = axios.create({
+  baseURL: `${API_URL}/auth`,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
 export default function VerifyEmailScreen({ navigation }: any) {
   const context = useContext(Context)!;
 
-  const { formData } = context;
+  const { formData, setAccessToken, setRefreshToken } = context;
 
-  const handleCheckInbox = async () => {
-    // const mailtoUrl = `mailto:${formData.email}`;
-    // try {
-    //   Linking.openURL(mailtoUrl);
-    // } catch (error) {
-    //   console.log('No Email App', error);
-    // }
+  const [isVerified, setIsVerified] = useState(false);
+
+  const isMounted = useRef(true);
+
+  useEffect(() => {
+    isMounted.current = true;
+
+    const checkVerification = async () => {
+      try {
+        const response = await apiCheckEmail.get(
+          `/check-verification/?email=${formData.email}`,
+        );
+
+        const { email, is_verified, access, refresh } = response.data.data;
+
+        if (is_verified) {
+          if (isMounted.current) {
+            await saveTokens(access, refresh);
+
+            setIsVerified(true);
+
+            setAccessToken(access);
+            setRefreshToken(refresh);
+
+            console.log(`
+
+          4.) EMAIL VERIFIED
+              
+            Email: ${email}
+            Is_verified: ${is_verified}
+            Access: ${access}
+            Refresh: ${refresh}
+
+          `);
+
+            navigation.navigate('CreateAccount');
+          }
+        } else {
+          if (isMounted.current) {
+            setTimeout(checkVerification, 5000);
+          }
+        }
+      } catch (error: any) {
+        const message = error.response?.data || error.message;
+
+        console.log(`
+
+          BACKEND !!!
+          
+            Message: ${message}
+
+        `);
+      }
+    };
+
+    checkVerification();
+
+    return () => {
+      isMounted.current = false;
+    };
+  }, []);
+
+  const handleProceed = async () => {
+    if (isVerified) {
+      navigation.navigate('AllowLocation');
+    }
   };
 
   const handleResendEmail = () => {
-    navigation.navigate('AllowLocation');
+    navigation.navigate('FormDetails');
   };
 
   return (
@@ -63,13 +134,17 @@ export default function VerifyEmailScreen({ navigation }: any) {
       <View style={StyleSignup.botButton}>
         <View style={StyleSignup.topShadow} />
         <Pressable
-          onPress={handleCheckInbox}
+          onPress={handleProceed}
+          disabled={!isVerified}
           style={({ pressed }) => [
             StyleSignup.checkInboxButton,
+            !isVerified ? { backgroundColor: '#ccc' } : {},
             pressed && StyleSignup.buttonPressed,
           ]}
         >
-          <Text style={StyleSignup.continueText}>Check Inbox</Text>
+          <Text style={StyleSignup.continueText}>
+            {isVerified ? 'Proceed' : 'Check Inbox'}
+          </Text>
         </Pressable>
 
         <Pressable

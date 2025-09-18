@@ -57,7 +57,14 @@ export default function SignupScreen({ navigation }: any) {
 
     if (isValid) {
       navigation.navigate('SendEmail');
-      console.log('User email: ', formData.email);
+
+      console.log(`
+
+          1.) EMAIL SIGNUP
+          
+            Input email: ${formData.email}
+
+        `);
     }
   };
 

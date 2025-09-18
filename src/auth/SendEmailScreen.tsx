@@ -39,9 +39,26 @@ export default function SendEmailScreen({ navigation }: any) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  const [pressCount, setPressCount] = useState(0);
+
   const handleSendEmail = async () => {
+    setPressCount(prev => prev + 1);
+
+    if (pressCount + 1 >= 2) {
+      setError('');
+      navigation.navigate('Login');
+      setFormData({ ...formData, email: '' });
+      return;
+    }
+
     try {
-      console.log('sending email');
+      console.log(`
+
+          2.) SEND EMAIL VERIFICATION
+          
+            To: ${formData.email}
+
+        `);
 
       setLoading(true);
       setError('');
@@ -50,26 +67,31 @@ export default function SendEmailScreen({ navigation }: any) {
         email: formData.email,
       });
 
-      console.log(response.data);
+      console.log(`
+
+          3.) CHECK YOUR INBOX
+
+            Message: ${response.data.message}
+
+        `);
 
       navigation.navigate('VerifyEmail');
     } catch (err: any) {
-      const message =
-        err.response?.data?.error ||
-        err.response?.data?.message ||
-        'Something went wrong';
+      const message = err.response?.data?.error || err.response?.data?.message;
 
-      console.log('message:', message);
+      console.log(`
+
+          BACKEND!!!
+          
+            Message: ${message}
+
+        `);
 
       setError(message);
 
       setTimeout(() => {
         setError('');
-
-        setFormData({ ...formData, email: '' });
-
-        navigation.navigate('Signup');
-      }, 3000);
+      }, 1500);
     } finally {
       setLoading(false);
     }

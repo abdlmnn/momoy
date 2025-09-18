@@ -27,6 +27,12 @@ type ContextType = {
 
   Colors: typeof Colors;
   Images: typeof Images;
+
+  accessToken: string | null;
+  setAccessToken: (token: string | null) => void;
+
+  refreshToken: string | null;
+  setRefreshToken: (token: string | null) => void;
 };
 
 export const Context = createContext<ContextType | undefined>(undefined);
@@ -42,7 +48,8 @@ export default function Provider({ children }: any) {
     password: '',
   });
 
-  // console.log('Signup FormData: ', formData);
+  const [accessToken, setAccessToken] = useState<string | null>(null);
+  const [refreshToken, setRefreshToken] = useState<string | null>(null);
 
   const global: ContextType = {
     isLoggedIn,
@@ -53,6 +60,12 @@ export default function Provider({ children }: any) {
 
     formData,
     setFormData,
+
+    accessToken,
+    setAccessToken,
+
+    refreshToken,
+    setRefreshToken,
   };
 
   return <Context.Provider value={global}>{children}</Context.Provider>;

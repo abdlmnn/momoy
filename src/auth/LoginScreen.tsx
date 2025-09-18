@@ -16,6 +16,16 @@ GoogleSignin.configure({
   scopes: ['email', 'profile'],
 });
 
+import { API_URL } from '@env';
+import axios from 'axios';
+
+const apiGoogle = axios.create({
+  baseURL: `${API_URL}/auth`,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
 export default function LoginScreen({ navigation }: any) {
   const signIn = async () => {
     try {
@@ -29,7 +39,7 @@ export default function LoginScreen({ navigation }: any) {
 
       const idToken = userInfo.data?.idToken;
 
-      const res = await api.post('/auth/google/', { token: idToken });
+      const res = await apiGoogle.post('/google/', { token: idToken });
 
       console.log('Response:', res.data);
 
