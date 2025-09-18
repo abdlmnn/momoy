@@ -27,14 +27,13 @@ export default function VerifyEmailScreen({ navigation }: any) {
 
   const { formData } = context;
 
-  const handleCheckInbox = () => {
-    const mailtoUrl = `mailto:${formData.email}`;
-
-    try {
-      Linking.openURL(mailtoUrl);
-    } catch (error) {
-      console.log('No Email App', error);
-    }
+  const handleCheckInbox = async () => {
+    // const mailtoUrl = `mailto:${formData.email}`;
+    // try {
+    //   Linking.openURL(mailtoUrl);
+    // } catch (error) {
+    //   console.log('No Email App', error);
+    // }
   };
 
   const handleResendEmail = () => {

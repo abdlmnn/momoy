@@ -10,25 +10,21 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import api from '../services/api';
 import { WEB_CLIENT_ID } from '@env';
 
-// Configure Google Sign-In
 GoogleSignin.configure({
   webClientId: WEB_CLIENT_ID,
   offlineAccess: true,
-  // scopes: ['https://www.googleapis.com/auth/drive.readonly'],
   scopes: ['email', 'profile'],
 });
 
 export default function LoginScreen({ navigation }: any) {
   const signIn = async () => {
     try {
-      // Ensure Google Play Services are available
       await GoogleSignin.hasPlayServices({
         showPlayServicesUpdateDialog: true,
       });
 
       await GoogleSignin.signOut();
 
-      // Perform Google Sign-In
       const userInfo = await GoogleSignin.signIn();
 
       const idToken = userInfo.data?.idToken;
@@ -57,7 +53,6 @@ export default function LoginScreen({ navigation }: any) {
         size={GoogleSigninButton.Size.Wide}
         color={GoogleSigninButton.Color.Dark}
         onPress={signIn}
-        // style={{ backgroundColor: 'red' }}
         disabled={false}
       />
     </View>

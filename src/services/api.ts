@@ -29,7 +29,6 @@ export async function getCategories() {
   }
 }
 
-// Add a request interceptor to automatically attach the access token
 api.interceptors.request.use(async config => {
   const token = await AsyncStorage.getItem('accessToken');
 
@@ -41,7 +40,6 @@ api.interceptors.request.use(async config => {
   return config;
 });
 
-// Response interceptor → refresh token on 401
 api.interceptors.response.use(
   response => response,
   async error => {
@@ -60,11 +58,10 @@ api.interceptors.response.use(
 
           // console.log(newAccess);
 
-          // save new access token
           await AsyncStorage.setItem('access', newAccess);
 
-          // retry original request with new token
           originalRequest.headers.Authorization = `Bearer ${newAccess}`;
+
           return api(originalRequest);
         } catch (refreshError) {
           console.error('Token refresh failed:', refreshError);
