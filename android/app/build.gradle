@@ -4,6 +4,17 @@ apply plugin: "com.facebook.react"
 
 apply from: "../../node_modules/react-native-vector-icons/fonts.gradle"
 
+import java.util.Properties
+
+def getEnvValue(String key) {
+    def propsFile = rootProject.file(".env")
+    def props = new Properties()
+    if (propsFile.exists()) {
+        props.load(new FileInputStream(propsFile))
+    }
+    return props.getProperty(key, "")
+}
+
 
 /**
  * This is the configuration block to customize your React Native Android app.
@@ -87,6 +98,11 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"
+
+        // GOOGLE_MAPS_API_KEY from .env
+        manifestPlaceholders = [
+            GOOGLE_MAPS_API_KEY: getEnvValue("GOOGLE_MAPS_API_KEY")
+        ]
     }
     signingConfigs {
         debug {
