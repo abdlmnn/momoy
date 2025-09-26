@@ -25,6 +25,7 @@ interface InputProps {
   autoCapitalize?: 'none' | 'sentences' | 'words' | 'characters';
   submitted?: boolean;
   isValid?: boolean;
+  bgColor: string;
 }
 
 export default function Inputs({
@@ -35,6 +36,7 @@ export default function Inputs({
   autoCapitalize = 'none',
   submitted = false,
   isValid = true,
+  bgColor,
 }: InputProps) {
   const [isFocused, setIsFocused] = useState(false);
 
@@ -66,6 +68,7 @@ export default function Inputs({
         StyleSignup.inputContainer2,
         {
           borderColor,
+          backgroundColor: bgColor,
         },
       ]}
     >
@@ -73,7 +76,7 @@ export default function Inputs({
         style={{
           position: 'absolute',
           left: 12,
-          backgroundColor: Colors.white,
+          backgroundColor: bgColor,
           paddingHorizontal: 4,
           top: labelAnim.interpolate({
             inputRange: [0, 1],

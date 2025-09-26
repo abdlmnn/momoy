@@ -77,7 +77,10 @@ export default function SendEmailScreen({ navigation }: any) {
 
       navigation.navigate('VerifyEmail');
     } catch (err: any) {
-      const message = err.response?.data?.error || err.response?.data?.message;
+      const message =
+        err.response?.data?.error ||
+        err.response?.data?.message ||
+        'Network or server error';
 
       console.log(`
 
@@ -100,7 +103,12 @@ export default function SendEmailScreen({ navigation }: any) {
   return (
     <View style={StyleSignup.container}>
       <View style={StyleSignup.topButton}>
-        <TouchableOpacity onPress={() => navigation.navigate('Signup')}>
+        <TouchableOpacity
+          onPress={() => {
+            navigation.navigate('Signup');
+            setFormData({ ...formData, email: '' });
+          }}
+        >
           <MaterialIcons name="arrow-back" style={StyleSignup.colorIcon} />
         </TouchableOpacity>
       </View>

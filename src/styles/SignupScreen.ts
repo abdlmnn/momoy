@@ -147,4 +147,45 @@ export const StyleSignup = StyleSheet.create({
     // fontWeight: '500',
     color: Colors.charcoal,
   },
+
+  passwordContainer: {
+    // borderWidth: 1,
+    // flex: 1,
+    marginTop: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    backgroundColor: Colors.borderBGColor,
+    borderRadius: 15,
+  },
+  checkContainer: {
+    // borderWidth: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+  },
+  passwordText: {
+    color: Colors.charcoal,
+    textAlign: 'center',
+    fontSize: 12,
+    fontWeight: '700',
+  },
+
+  textCheckContainer: {
+    // borderWidth: 1,
+    // flex: 1,
+    paddingHorizontal: 5,
+    paddingVertical: 10,
+    gap: 5,
+  },
+  textCheckRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  passwordText2: {
+    color: Colors.charcoal,
+    textAlign: 'center',
+    fontSize: 12,
+    // fontWeight: '700',
+  },
 });

@@ -15,6 +15,7 @@ import React, { useEffect, useRef, useState, useContext } from 'react';
 import Inputs, { Prefix } from '../components/common/Inputs';
 import { Context } from '../contexts/Context';
 import { StyleSignup } from '../styles/SignupScreen';
+import CheckText from '../components/CheckText';
 import Colors from '../constants/Colors';
 import Images from '../constants/Images';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -23,6 +24,8 @@ import axios from 'axios';
 import { API_URL } from '@env';
 import { apiAuth } from '../services/api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+
+import CheckBox from '@react-native-community/checkbox';
 
 export default function CreateAccountScreen({ navigation }: any) {
   const context = useContext(Context)!;
@@ -34,7 +37,78 @@ export default function CreateAccountScreen({ navigation }: any) {
   const isFirstNameValid = formData.firstName.trim().length > 0;
   const isLastNameValid = formData.lastName.trim().length > 0;
   const isPhoneValid = /^\d{10}$/.test(formData.phone.replace(/\s/g, ''));
-  const isValid = isFirstNameValid && isLastNameValid && isPhoneValid;
+  const isPasswordValid = formData.usePassword
+    ? true
+    : formData.password.trim().length >= 8;
+  const isValid =
+    isFirstNameValid && isLastNameValid && isPhoneValid && isPasswordValid;
+
+  const saveProgress = async (data: any) => {
+    try {
+      await AsyncStorage.setItem('accountProgress', JSON.stringify(data));
+    } catch (e) {
+      console.log('Error saving progress', e);
+    }
+  };
+
+  useEffect(() => {
+    const loadProgress = async () => {
+      try {
+        const stored = await AsyncStorage.getItem('accountProgress');
+        if (stored) {
+          setFormData(JSON.parse(stored));
+        }
+      } catch (e) {
+        console.log('Error loading progress', e);
+      }
+    };
+    loadProgress();
+  }, []);
+
+  const getApiInstance = async () => {
+    let accessToken = await AsyncStorage.getItem('access');
+
+    const instance = axios.create({
+      baseURL: `${API_URL}/auth`,
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+
+    instance.interceptors.response.use(
+      response => response,
+      async error => {
+        if (
+          error.response?.status === 401 &&
+          error.response?.data?.code === 'token_not_valid'
+        ) {
+          const refreshToken = await AsyncStorage.getItem('refresh');
+          if (!refreshToken) return Promise.reject(error);
+
+          try {
+            const refreshResp = await axios.post(
+              `${API_URL}/auth/token/refresh/`,
+              {
+                refresh: refreshToken,
+              },
+            );
+
+            const newAccess = refreshResp.data.access;
+            await AsyncStorage.setItem('access', newAccess);
+
+            error.config.headers['Authorization'] = `Bearer ${newAccess}`;
+            return instance(error.config);
+          } catch (refreshErr) {
+            console.log('Refresh token failed', refreshErr);
+
+            navigation.navigate('Welcome');
+            return Promise.reject(refreshErr);
+          }
+        }
+        return Promise.reject(error);
+      },
+    );
+
+    return instance;
+  };
 
   const handleCreateAccount = async () => {
     setSubmitted(true);
@@ -43,16 +117,26 @@ export default function CreateAccountScreen({ navigation }: any) {
       try {
         const token = accessToken;
 
-        if (!token) {
-          console.log('No token found');
-          return;
-        }
+        const api = await getApiInstance();
 
-        const response = await apiAuth(token).post('/create-account/', {
+        // if (!token) {
+        //   console.log('No token found');
+        //   return;
+        // }
+
+        const response = await api.post('/create-account/', {
           first_name: formData.firstName,
           last_name: formData.lastName,
           phone: formData.phone.replace(/\s/g, ''),
+          password: formData.usePassword ? undefined : formData.password,
         });
+
+        // const response = await apiAuth(token).post('/create-account/', {
+        //   first_name: formData.firstName,
+        //   last_name: formData.lastName,
+        //   phone: formData.phone.replace(/\s/g, ''),
+        //   password: formData.usePassword ? undefined : formData.password,
+        // });
 
         console.log(`
 
@@ -62,14 +146,19 @@ export default function CreateAccountScreen({ navigation }: any) {
             Fullname: ${response.data.first_name} ${response.data.last_name}
             Phone: ${response.data.phone}
             Email: ${response.data.email}
+            Password: ${response.data.password}
 
         `);
+
+        // await AsyncStorage.setItem('isCreated', 'true');
+
+        // await AsyncStorage.removeItem('accountProgress');
 
         navigation.navigate('AllowLocation');
       } catch (err: any) {
         console.log(
           'Error creating account:',
-          err.response?.data || err.message,
+          err.response?.data.messages.message || err.message,
         );
       }
     }
@@ -78,16 +167,21 @@ export default function CreateAccountScreen({ navigation }: any) {
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <View style={StyleSignup.container}>
-        <View style={StyleSignup.topButton}>
-          <TouchableOpacity onPress={() => navigation.navigate('VerifyEmail')}>
+        <View
+          style={[
+            StyleSignup.topButton,
+            { borderWidth: 0, paddingVertical: 32 },
+          ]}
+        >
+          {/* <TouchableOpacity onPress={() => navigation.reset('VerifyEmail')}>
             <MaterialIcons name="arrow-back" style={StyleSignup.colorIcon} />
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
 
         <View style={StyleSignup.midContent}>
           <ScrollView
             contentContainerStyle={{
-              flexGrow: 1,
+              // flexGrow: 1,
               paddingBottom: 25,
             }}
             keyboardShouldPersistTaps="handled"
@@ -99,20 +193,26 @@ export default function CreateAccountScreen({ navigation }: any) {
             />
 
             <Text style={StyleSignup.h1}>Let's get you started!</Text>
+
             <View
               style={{
                 // flexDirection: 'row',
                 gap: 12,
                 marginTop: 25,
+                flex: 1,
+                // borderWidth: 1,
               }}
             >
               <View style={{ flex: 0 }}>
                 <Inputs
+                  bgColor={Colors.white}
                   label="First Name"
                   value={formData.firstName}
-                  onChangeText={text =>
-                    setFormData(prev => ({ ...prev, firstName: text }))
-                  }
+                  onChangeText={text => {
+                    const updated = { ...formData, firstName: text };
+                    setFormData(updated);
+                    saveProgress(updated);
+                  }}
                   submitted={submitted}
                   isValid={isFirstNameValid}
                 />
@@ -120,11 +220,14 @@ export default function CreateAccountScreen({ navigation }: any) {
 
               <View style={{ flex: 0, marginTop: 10 }}>
                 <Inputs
+                  bgColor={Colors.white}
                   label="Last Name"
                   value={formData.lastName}
-                  onChangeText={text =>
-                    setFormData(prev => ({ ...prev, lastName: text }))
-                  }
+                  onChangeText={text => {
+                    const updated = { ...formData, lastName: text };
+                    setFormData(updated);
+                    saveProgress(updated);
+                  }}
                   submitted={submitted}
                   isValid={isLastNameValid}
                 />
@@ -145,19 +248,81 @@ export default function CreateAccountScreen({ navigation }: any) {
                   }}
                 >
                   <Inputs
+                    bgColor={Colors.white}
                     label="Phone Number"
                     value={formData.phone}
-                    onChangeText={text =>
-                      setFormData(prev => ({
-                        ...prev,
+                    onChangeText={text => {
+                      const updated = {
+                        ...formData,
                         phone: formatPhoneNumber(text),
-                      }))
-                    }
+                      };
+                      setFormData(updated);
+                      saveProgress(updated);
+                    }}
                     submitted={submitted}
                     isValid={isPhoneValid}
                     keyboardType="phone-pad"
                   />
                 </View>
+              </View>
+
+              {!formData.usePassword && (
+                <View style={{ flex: 0, marginTop: 10 }}>
+                  <Inputs
+                    bgColor={Colors.white}
+                    label="Password"
+                    value={formData.password}
+                    onChangeText={text => {
+                      const updated = {
+                        ...formData,
+                        password: text,
+                      };
+                      setFormData(updated);
+                      saveProgress(updated);
+                    }}
+                    submitted={submitted}
+                    isValid={isPasswordValid}
+                  />
+                </View>
+              )}
+
+              <View style={StyleSignup.passwordContainer}>
+                <View style={StyleSignup.checkContainer}>
+                  <CheckBox
+                    value={formData.usePassword}
+                    onValueChange={value => {
+                      const updated = {
+                        ...formData,
+                        usePassword: value,
+                        password: value ? '' : formData.password,
+                      };
+                      setFormData(updated);
+                      saveProgress(updated);
+                    }}
+                    tintColors={{
+                      true: Colors.charcoal,
+                      false: Colors.charcoal,
+                    }}
+                  />
+
+                  <Text style={StyleSignup.passwordText}>
+                    Continue without a password
+                  </Text>
+                </View>
+
+                {formData.usePassword ? (
+                  <View style={StyleSignup.textCheckContainer}>
+                    <CheckText text="No need to remember your password" />
+                    <CheckText text="Log in using your email" />
+                    <CheckText text="Fast, reliable & secure experience every time" />
+                  </View>
+                ) : (
+                  <View style={StyleSignup.textCheckContainer}>
+                    <CheckText useBullet text="At least 8 characters" />
+                    <CheckText useBullet text="Letters & numbers" />
+                    <CheckText useBullet text="Optional symbol" />
+                  </View>
+                )}
               </View>
             </View>
           </ScrollView>

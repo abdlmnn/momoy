@@ -117,6 +117,9 @@ Step 2: Install Dependencies
   npm install react-native-screens
   npm install react-native-reanimated
   npm install react-native-worklets
+
+  npm install react-native-navigation-bar-color@latest
+  npm install @react-native-community/checkbox@latest
 ```
 
 Step 3: Install Navigation (Tabs and Stack)

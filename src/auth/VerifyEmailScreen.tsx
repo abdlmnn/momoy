@@ -41,11 +41,9 @@ export default function VerifyEmailScreen({ navigation }: any) {
 
   const [isVerified, setIsVerified] = useState(false);
 
-  const isMounted = useRef(true);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
-    isMounted.current = true;
-
     const checkVerification = async () => {
       try {
         const response = await apiCheckEmail.get(
@@ -55,15 +53,15 @@ export default function VerifyEmailScreen({ navigation }: any) {
         const { email, is_verified, access, refresh } = response.data.data;
 
         if (is_verified) {
-          if (isMounted.current) {
-            await saveTokens(access, refresh);
+          await AsyncStorage.setItem('access', access);
+          await AsyncStorage.setItem('refresh', refresh);
 
-            setIsVerified(true);
+          setIsVerified(true);
 
-            setAccessToken(access);
-            setRefreshToken(refresh);
+          setAccessToken(access);
+          setRefreshToken(refresh);
 
-            console.log(`
+          console.log(`
 
           4.) EMAIL VERIFIED
               
@@ -74,15 +72,18 @@ export default function VerifyEmailScreen({ navigation }: any) {
 
           `);
 
-            navigation.navigate('CreateAccount');
-          }
-        } else {
-          if (isMounted.current) {
-            setTimeout(checkVerification, 5000);
-          }
+          if (intervalRef.current) clearInterval(intervalRef.current);
+
+          navigation.reset({
+            index: 0,
+            routes: [{ name: 'CreateAccount' }],
+          });
         }
       } catch (error: any) {
-        const message = error.response?.data || error.message;
+        const message =
+          error.response?.data?.error ||
+          error.response?.data?.message ||
+          error.message;
 
         console.log(`
 
@@ -94,10 +95,12 @@ export default function VerifyEmailScreen({ navigation }: any) {
       }
     };
 
+    intervalRef.current = setInterval(checkVerification, 5000);
+
     checkVerification();
 
     return () => {
-      isMounted.current = false;
+      if (intervalRef.current) clearInterval(intervalRef.current);
     };
   }, []);
 
@@ -107,8 +110,17 @@ export default function VerifyEmailScreen({ navigation }: any) {
     }
   };
 
-  const handleResendEmail = () => {
-    navigation.navigate('FormDetails');
+  const handleResendEmail = async () => {
+    try {
+      const response = await apiCheckEmail.post('/email-signup/', {
+        email: formData.email,
+      });
+      console.log('Resent verification email:', response.data.message);
+      console.log('Verification email resent!');
+    } catch (err: any) {
+      console.log('Error resending email:', err.response?.data || err.message);
+      console.log('Failed to resend verification email.');
+    }
   };
 
   return (

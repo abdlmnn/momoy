@@ -1,11 +1,10 @@
 import { StyleSheet } from 'react-native';
+import Colors from '../constants/Colors';
 
 export const StyleHome = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffff',
-    height: '100%',
-    width: '100%',
+    backgroundColor: Colors.white,
   },
   topBar: {
     backgroundColor: 'red',

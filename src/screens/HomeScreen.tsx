@@ -11,6 +11,7 @@ import {
 import { getCategories, getProducts } from '../services/api';
 import { Product, Categories } from '../types/types';
 import { StyleHome } from '../styles/HomeScreen';
+import Colors from '../constants/Colors';
 
 export default function HomeScreen({ navigation }: any) {
   // const [products, setProducts] = useState<Product[]>([]);
@@ -78,15 +79,13 @@ export default function HomeScreen({ navigation }: any) {
     //     />
     //   </View>
     // </View>
-    <View style={StyleHome.container}>
+    <View style={[StyleHome.container]}>
       <View style={StyleHome.topBar}>
         <View></View>
         <View style={StyleHome.searchContainer}>
           <TextInput placeholder="Search here" style={StyleHome.search} />
         </View>
       </View>
-
-      <Button title="Login" onPress={() => navigation.navigate('Login')} />
     </View>
   );
 }

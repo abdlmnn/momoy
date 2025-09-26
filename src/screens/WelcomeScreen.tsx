@@ -80,7 +80,7 @@ export default function WelcomeScreen({ navigation }: any) {
         <View style={StyleWelcome.buttonSection}>
           <SignupButton onPress={() => navigation.navigate('Signup')} />
 
-          <LoginButton onPress={() => navigation.navigate('CreateAccount')} />
+          <LoginButton onPress={() => navigation.navigate('Login')} />
 
           <View style={StyleWelcome.lineContainer}>
             <View style={StyleWelcome.line} />

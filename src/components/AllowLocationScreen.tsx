@@ -12,11 +12,12 @@ import {
   RESULTS,
   openSettings,
 } from 'react-native-permissions';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export default function AllowLocationScreen() {
+export default function AllowLocationScreen({ navigation }: any) {
   const getLocation = () => {
     Geolocation.getCurrentPosition(
-      pos => {
+      async pos => {
         const { latitude, longitude, accuracy } = pos.coords;
 
         console.log(`
@@ -29,6 +30,8 @@ export default function AllowLocationScreen() {
           `);
 
         // API for Google Map
+        await AsyncStorage.setItem('isCreated', 'true');
+        await AsyncStorage.removeItem('accountProgress');
       },
       err => {
         console.warn('User location failed', err);
@@ -88,10 +91,21 @@ export default function AllowLocationScreen() {
 
       if (status === RESULTS.GRANTED) {
         await ensureGpsEnabled();
+
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'Index' }],
+        });
       } else if (status === RESULTS.DENIED) {
         const result = await request(PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION);
+
         if (result === RESULTS.GRANTED) {
           await ensureGpsEnabled();
+
+          navigation.reset({
+            index: 0,
+            routes: [{ name: 'Index' }],
+          });
         }
       } else if (status === RESULTS.BLOCKED) {
         Alert.alert(

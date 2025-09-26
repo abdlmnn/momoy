@@ -9,6 +9,7 @@ import React, {
 } from 'react';
 import Colors from '../constants/Colors';
 import Images from '../constants/Images';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type formData = {
   email: string;
@@ -16,12 +17,10 @@ type formData = {
   lastName: string;
   phone: string;
   password: string;
+  usePassword: boolean;
 };
 
 type ContextType = {
-  isLoggedIn: boolean;
-  setIsLoggedIn: (value: boolean) => void;
-
   formData: formData;
   setFormData: React.Dispatch<React.SetStateAction<formData>>;
 
@@ -33,12 +32,17 @@ type ContextType = {
 
   refreshToken: string | null;
   setRefreshToken: (token: string | null) => void;
+
+  isLoggedIn: boolean;
+
+  isCreated: boolean;
+  setIsCreated: (value: boolean) => void;
 };
 
 export const Context = createContext<ContextType | undefined>(undefined);
 
 export default function Provider({ children }: any) {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isCreated, setIsCreated] = useState(false);
 
   const [formData, setFormData] = useState<formData>({
     email: '',
@@ -46,15 +50,35 @@ export default function Provider({ children }: any) {
     lastName: '',
     phone: '',
     password: '',
+    usePassword: true,
   });
 
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [refreshToken, setRefreshToken] = useState<string | null>(null);
 
-  const global: ContextType = {
-    isLoggedIn,
-    setIsLoggedIn,
+  const isLoggedIn = !!accessToken && !!refreshToken;
 
+  useEffect(() => {
+    const loadSavedTokens = async () => {
+      try {
+        const savedAccess = await AsyncStorage.getItem('access');
+        const savedRefresh = await AsyncStorage.getItem('refresh');
+        const savedProgress = await AsyncStorage.getItem('accountProgress');
+        const createdFlag = await AsyncStorage.getItem('isCreated');
+
+        if (savedAccess) setAccessToken(savedAccess);
+        if (savedRefresh) setRefreshToken(savedRefresh);
+        if (savedProgress) setFormData(JSON.parse(savedProgress));
+        if (createdFlag) setIsCreated(createdFlag === 'true');
+      } catch (e) {
+        console.log('Failed to load saved tokens:', e);
+      }
+    };
+
+    loadSavedTokens();
+  }, []);
+
+  const global: ContextType = {
     Colors,
     Images,
 
@@ -66,6 +90,11 @@ export default function Provider({ children }: any) {
 
     refreshToken,
     setRefreshToken,
+
+    isLoggedIn,
+
+    isCreated,
+    setIsCreated,
   };
 
   return <Context.Provider value={global}>{children}</Context.Provider>;

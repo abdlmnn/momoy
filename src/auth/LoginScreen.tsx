@@ -59,12 +59,12 @@ export default function LoginScreen({ navigation }: any) {
   return (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
       <Text style={{ marginBottom: 20 }}>LoginScreen</Text>
-      <GoogleSigninButton
+      {/* <GoogleSigninButton
         size={GoogleSigninButton.Size.Wide}
         color={GoogleSigninButton.Color.Dark}
         onPress={signIn}
         disabled={false}
-      />
+      /> */}
     </View>
   );
 }
