@@ -22,36 +22,22 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
 
-import BootSplash from 'react-native-bootsplash';
 import Images from './src/constants/Images';
 
 function App() {
   return (
-    <SafeAreaProvider
-      style={{ backgroundColor: Colors.lightTangerine, flex: 1 }}
-    >
-      <AppContent />
-    </SafeAreaProvider>
+    // <SafeAreaProvider>
+    <AppContent />
+    // </SafeAreaProvider>
   );
 }
 
 function AppContent() {
-  const safeAreaInsets = useSafeAreaInsets();
+  // const safeAreaInsets = useSafeAreaInsets();
 
   const [isLoading, setIsLoading] = useState(true);
 
   const [initialRoute, setInitialRoute] = useState<null | string>(null);
-
-  useEffect(() => {
-    const init = async () => {
-      // …do multiple sync or async tasks
-    };
-
-    init().finally(async () => {
-      await BootSplash.hide({ fade: true });
-      console.log('BootSplash has been hidden successfully');
-    });
-  }, []);
 
   useEffect(() => {
     const checkProgress = async () => {
@@ -80,6 +66,9 @@ function AppContent() {
 
     checkProgress();
 
+    // StatusBar.setBarStyle('light-content', true);
+    // StatusBar.setBackgroundColor(Colors.lightTangerine, true);
+
     changeNavigationBarColor(Colors.white, true);
   }, []);
 
@@ -102,8 +91,22 @@ function AppContent() {
 
   return (
     <Provider>
-      <StatusBar barStyle="dark-content" backgroundColor={Colors.white} />
-      <StackNavigator initialRouteName={initialRoute} />
+      {isLoading ? (
+        <>
+          <StatusBar
+            barStyle="light-content"
+            backgroundColor={Colors.lightTangerine}
+          />
+
+          <SplashScreen onFinish={() => setIsLoading(false)} />
+        </>
+      ) : (
+        <>
+          <StatusBar barStyle="dark-content" backgroundColor={Colors.white} />
+
+          {initialRoute && <StackNavigator initialRouteName={initialRoute} />}
+        </>
+      )}
     </Provider>
   );
 }
