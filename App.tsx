@@ -1,6 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { NewAppScreen } from '@react-native/new-app-screen';
-import { StatusBar, StyleSheet, useColorScheme, View } from 'react-native';
+import {
+  StatusBar,
+  StyleSheet,
+  useColorScheme,
+  View,
+  Animated,
+  Image,
+} from 'react-native';
 import {
   SafeAreaProvider,
   useSafeAreaInsets,
@@ -14,6 +21,9 @@ import Provider from './src/contexts/Context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
+
+import BootSplash from 'react-native-bootsplash';
+import Images from './src/constants/Images';
 
 function App() {
   return (
@@ -31,6 +41,17 @@ function AppContent() {
   const [isLoading, setIsLoading] = useState(true);
 
   const [initialRoute, setInitialRoute] = useState<null | string>(null);
+
+  useEffect(() => {
+    const init = async () => {
+      // …do multiple sync or async tasks
+    };
+
+    init().finally(async () => {
+      await BootSplash.hide({ fade: true });
+      console.log('BootSplash has been hidden successfully');
+    });
+  }, []);
 
   useEffect(() => {
     const checkProgress = async () => {
@@ -62,22 +83,22 @@ function AppContent() {
     changeNavigationBarColor(Colors.white, true);
   }, []);
 
-  if (isLoading) {
-    return (
-      <SafeAreaProvider
-        style={{ flex: 1, backgroundColor: Colors.lightTangerine }}
-      >
-        <StatusBar
-          barStyle="light-content"
-          backgroundColor={Colors.lightTangerine}
-        />
+  // if (isLoading) {
+  //   return (
+  //     <SafeAreaProvider
+  //       style={{ flex: 1, backgroundColor: Colors.lightTangerine }}
+  //     >
+  //       <StatusBar
+  //         barStyle="light-content"
+  //         backgroundColor={Colors.lightTangerine}
+  //       />
 
-        <View style={{ flex: 1, backgroundColor: Colors.lightTangerine }}>
-          <SplashScreen onFinish={() => setIsLoading(false)} />
-        </View>
-      </SafeAreaProvider>
-    );
-  }
+  //       <View style={{ flex: 1, backgroundColor: Colors.lightTangerine }}>
+  //         <SplashScreen onFinish={() => setIsLoading(false)} />
+  //       </View>
+  //     </SafeAreaProvider>
+  //   );
+  // }
 
   return (
     <Provider>

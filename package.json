@@ -22,6 +22,7 @@
     "react": "19.1.0",
     "react-native": "0.81.1",
     "react-native-android-location-enabler": "^3.0.1",
+    "react-native-bootsplash": "^6.3.11",
     "react-native-dotenv": "^3.4.11",
     "react-native-maps": "^1.26.9",
     "react-native-navigation-bar-color": "^2.0.2",
