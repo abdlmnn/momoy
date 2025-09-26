@@ -121,7 +121,6 @@ Step 2: Install Dependencies
   npm install react-native-navigation-bar-color@latest
   npm install @react-native-community/checkbox@latest
   npm install react-native-maps@latest
-  npm install react-native-config@latest
 ```
 
 Step 3: Install Navigation (Tabs and Stack)
