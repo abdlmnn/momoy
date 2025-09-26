@@ -9,3 +9,9 @@ declare module 'react-native-vector-icons/Feather' {
   const content: any;
   export default content;
 }
+
+declare module 'react-native-vector-icons/Lucide' {
+  // import { Lucide } from 'react-native-vector-icons/Lucide';
+  const content: any;
+  export default content;
+}

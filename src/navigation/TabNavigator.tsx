@@ -6,9 +6,11 @@ import CartScreen from '../screens/CartScreen';
 import Colors from '../constants/Colors';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Feather from 'react-native-vector-icons/Feather';
+import Lucide from 'react-native-vector-icons/Lucide';
 
 import SearchScreen from '../screens/SearchScreen';
 import AccountScreen from '../screens/AccountScreen';
+import MapScreen from '../screens/MapScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -48,6 +50,7 @@ export default function BottomNavigator() {
           ),
         }}
       />
+
       <Tab.Screen
         name="Cart"
         component={CartScreen}
@@ -62,6 +65,7 @@ export default function BottomNavigator() {
           ),
         }}
       />
+
       <Tab.Screen
         name="Search"
         component={SearchScreen}
@@ -76,6 +80,22 @@ export default function BottomNavigator() {
           ),
         }}
       />
+
+      <Tab.Screen
+        name="Map"
+        component={MapScreen}
+        options={{
+          tabBarLabel: 'Map',
+          tabBarIcon: ({ focused, size }) => (
+            <Feather
+              name="map"
+              size={22}
+              color={focused ? Colors.darkTangerine : Colors.light}
+            />
+          ),
+        }}
+      />
+
       <Tab.Screen
         name="Account"
         component={AccountScreen}

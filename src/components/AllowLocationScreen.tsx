@@ -1,5 +1,12 @@
-import { Text, View, Pressable, Animated, Alert } from 'react-native';
-import React, { useEffect, useRef } from 'react';
+import {
+  Text,
+  View,
+  Pressable,
+  Animated,
+  Alert,
+  ActivityIndicator,
+} from 'react-native';
+import React, { useEffect, useRef, useState, useContext } from 'react';
 import Images from '../constants/Images';
 import { StyleAllowLocation } from '../styles/AllowLocation';
 import BenefitRow from './common/BenefitRow';
@@ -13,8 +20,32 @@ import {
   openSettings,
 } from 'react-native-permissions';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Context } from '../contexts/Context';
 
 export default function AllowLocationScreen({ navigation }: any) {
+  const { setLocation, setIsCreated } = useContext(Context)!;
+
+  const [loading, setLoading] = useState(false);
+
+  const moveAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(moveAnim, {
+          toValue: 15,
+          duration: 1000,
+          useNativeDriver: true,
+        }),
+        Animated.timing(moveAnim, {
+          toValue: 0,
+          duration: 1000,
+          useNativeDriver: true,
+        }),
+      ]),
+    ).start();
+  }, []);
+
   const getLocation = () => {
     Geolocation.getCurrentPosition(
       async pos => {
@@ -29,12 +60,19 @@ export default function AllowLocationScreen({ navigation }: any) {
 
           `);
 
-        // API for Google Map
         await AsyncStorage.setItem('isCreated', 'true');
         await AsyncStorage.removeItem('accountProgress');
+
+        // API for Google Map
+        await setLocation({ latitude, longitude });
+
+        navigation.replace('Index');
+
+        setLoading(false);
       },
       err => {
         console.warn('User location failed', err);
+        setLoading(false);
       },
       { enableHighAccuracy: false, timeout: 10000, maximumAge: 5000 },
     );
@@ -58,6 +96,7 @@ export default function AllowLocationScreen({ navigation }: any) {
       },
       err => {
         console.warn('High-accuracy watch failed', err);
+        setLoading(false);
       },
       {
         enableHighAccuracy: true,
@@ -82,30 +121,25 @@ export default function AllowLocationScreen({ navigation }: any) {
       }
     } catch (err) {
       console.log('Not enable GPS', err);
+      setLoading(false);
     }
   };
 
   const requestEnableLocation = async () => {
     try {
+      setLoading(true);
+
       const status = await check(PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION);
 
       if (status === RESULTS.GRANTED) {
         await ensureGpsEnabled();
-
-        navigation.reset({
-          index: 0,
-          routes: [{ name: 'Index' }],
-        });
       } else if (status === RESULTS.DENIED) {
         const result = await request(PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION);
 
         if (result === RESULTS.GRANTED) {
           await ensureGpsEnabled();
-
-          navigation.reset({
-            index: 0,
-            routes: [{ name: 'Index' }],
-          });
+        } else {
+          setLoading(false);
         }
       } else if (status === RESULTS.BLOCKED) {
         Alert.alert(
@@ -119,27 +153,9 @@ export default function AllowLocationScreen({ navigation }: any) {
       }
     } catch (error) {
       console.error(error);
+      setLoading(false);
     }
   };
-
-  const moveAnim = useRef(new Animated.Value(0)).current;
-
-  useEffect(() => {
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(moveAnim, {
-          toValue: 15,
-          duration: 1000,
-          useNativeDriver: true,
-        }),
-        Animated.timing(moveAnim, {
-          toValue: 0,
-          duration: 1000,
-          useNativeDriver: true,
-        }),
-      ]),
-    ).start();
-  }, []);
 
   return (
     <View style={StyleAllowLocation.container}>
@@ -183,8 +199,11 @@ export default function AllowLocationScreen({ navigation }: any) {
             StyleAllowLocation.button,
             pressed && StyleAllowLocation.buttonPressed,
           ]}
+          disabled={loading}
         >
-          <Text style={StyleAllowLocation.buttonText}>Continue</Text>
+          <Text style={StyleAllowLocation.buttonText}>
+            {loading ? 'Getting your location...' : 'Continue'}
+          </Text>
         </Pressable>
       </View>
     </View>

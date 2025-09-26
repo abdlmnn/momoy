@@ -11,7 +11,6 @@ import SendEmailScreen from '../auth/SendEmailScreen';
 import VerifyEmailScreen from '../auth/VerifyEmailScreen';
 import AllowLocationScreen from '../components/AllowLocationScreen';
 import CreateAccountScreen from '../auth/CreateAccountScreen';
-import BottomNavigator from './BottomNavigator';
 
 const Stack = createNativeStackNavigator();
 
@@ -32,6 +31,7 @@ export default function StackNavigator({ initialRouteName }: any) {
         <Stack.Screen name="VerifyEmail" component={VerifyEmailScreen} />
 
         <Stack.Screen name="CreateAccount" component={CreateAccountScreen} />
+
         <Stack.Screen name="AllowLocation" component={AllowLocationScreen} />
 
         <Stack.Screen name="Login" component={LoginScreen} />

@@ -37,6 +37,14 @@ type ContextType = {
 
   isCreated: boolean;
   setIsCreated: (value: boolean) => void;
+
+  userLocation: { latitude: number; longitude: number } | null;
+
+  setLocation: (
+    loc: { latitude: number; longitude: number } | null,
+  ) => Promise<void>;
+
+  logout: () => void;
 };
 
 export const Context = createContext<ContextType | undefined>(undefined);
@@ -53,6 +61,11 @@ export default function Provider({ children }: any) {
     usePassword: true,
   });
 
+  const [userLocation, setUserLocation] = useState<{
+    latitude: number;
+    longitude: number;
+  } | null>(null);
+
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [refreshToken, setRefreshToken] = useState<string | null>(null);
 
@@ -65,11 +78,13 @@ export default function Provider({ children }: any) {
         const savedRefresh = await AsyncStorage.getItem('refresh');
         const savedProgress = await AsyncStorage.getItem('accountProgress');
         const createdFlag = await AsyncStorage.getItem('isCreated');
+        const savedLocation = await AsyncStorage.getItem('userLocation');
 
         if (savedAccess) setAccessToken(savedAccess);
         if (savedRefresh) setRefreshToken(savedRefresh);
         if (savedProgress) setFormData(JSON.parse(savedProgress));
         if (createdFlag) setIsCreated(createdFlag === 'true');
+        if (savedLocation) setUserLocation(JSON.parse(savedLocation));
       } catch (e) {
         console.log('Failed to load saved tokens:', e);
       }
@@ -77,6 +92,30 @@ export default function Provider({ children }: any) {
 
     loadSavedTokens();
   }, []);
+
+  const setLocation = async (
+    loc: { latitude: number; longitude: number } | null,
+  ) => {
+    setUserLocation(loc);
+    if (loc) await AsyncStorage.setItem('userLocation', JSON.stringify(loc));
+    else await AsyncStorage.removeItem('userLocation');
+  };
+
+  const logout = async () => {
+    setAccessToken(null);
+    setRefreshToken(null);
+    setUserLocation(null);
+
+    setFormData({ ...formData, email: '' });
+
+    await AsyncStorage.multiRemove([
+      'access',
+      'refresh',
+      'userLocation',
+      'accountProgress',
+      'isCreated',
+    ]);
+  };
 
   const global: ContextType = {
     Colors,
@@ -95,6 +134,11 @@ export default function Provider({ children }: any) {
 
     isCreated,
     setIsCreated,
+
+    userLocation,
+    setLocation,
+
+    logout,
   };
 
   return <Context.Provider value={global}>{children}</Context.Provider>;
