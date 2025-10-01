@@ -10,7 +10,9 @@ import {
   TextInput,
   TextStyle,
   Keyboard,
+  StatusBar,
 } from 'react-native';
+import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import React, { useEffect, useRef, useState, useContext } from 'react';
 import AllowLocationScreen from '../components/AllowLocationScreen';
 import { StyleSignup } from '../styles/SignupScreen';
@@ -27,6 +29,17 @@ export default function SignupScreen({ navigation }: any) {
   const [submitted, setSubmitted] = useState(false);
 
   const labelAnim = useRef(new Animated.Value(formData.email ? 1 : 0)).current;
+
+  useEffect(() => {
+    StatusBar.setBarStyle('light-content');
+    // StatusBar.setBackgroundColor(Colors.white);
+
+    changeNavigationBarColor(Colors.white, true);
+  }, []);
+
+  useEffect(() => {
+    setFormData(prev => ({ ...prev, email: '' }));
+  }, []);
 
   useEffect(() => {
     Animated.timing(labelAnim, {
@@ -108,7 +121,7 @@ export default function SignupScreen({ navigation }: any) {
                 }),
               }}
             >
-              Email
+              {showError ? 'Enter a valid email address' : 'Email'}
             </Animated.Text>
             <TextInput
               onFocus={() => setIsFocused(true)}
@@ -126,7 +139,7 @@ export default function SignupScreen({ navigation }: any) {
               autoCapitalize="none"
             />
 
-            {showError && (
+            {/* {showError && (
               <Text
                 style={{
                   color: Colors.red,
@@ -139,7 +152,7 @@ export default function SignupScreen({ navigation }: any) {
               >
                 Enter a valid email address
               </Text>
-            )}
+            )} */}
           </View>
         </View>
 

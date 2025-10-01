@@ -30,9 +30,16 @@ import CheckBox from '@react-native-community/checkbox';
 export default function CreateAccountScreen({ navigation }: any) {
   const context = useContext(Context)!;
 
-  const { formData, setFormData, accessToken } = context;
+  const { formData, setFormData, accessToken, setIsCreated } = context;
 
   const [submitted, setSubmitted] = useState(false);
+
+  const [errorText, setErrorText] = useState({
+    firstName: '',
+    lastName: '',
+    phone: '',
+    password: '',
+  });
 
   const isFirstNameValid = formData.firstName.trim().length > 0;
   const isLastNameValid = formData.lastName.trim().length > 0;
@@ -113,36 +120,63 @@ export default function CreateAccountScreen({ navigation }: any) {
   const handleCreateAccount = async () => {
     setSubmitted(true);
 
-    if (isValid) {
-      try {
-        const token = accessToken;
+    let errors: any = {
+      firstName: 'First Name',
+      lastName: 'Last Name',
+      phone: 'Phone Number',
+      password: 'Password',
+    };
 
-        const api = await getApiInstance();
+    let hasError = false;
 
-        // if (!token) {
-        //   console.log('No token found');
-        //   return;
-        // }
+    if (formData.firstName.trim() === '') {
+      errors.firstName = 'First Name is required';
+      hasError = true;
+    }
 
-        const response = await api.post('/create-account/', {
-          first_name: formData.firstName,
-          last_name: formData.lastName,
-          phone: formData.phone.replace(/\s/g, ''),
-          password: formData.usePassword ? undefined : formData.password,
-        });
+    if (formData.lastName.trim() === '') {
+      errors.lastName = 'Last Name is required';
+      hasError = true;
+    }
 
-        // const response = await apiAuth(token).post('/create-account/', {
-        //   first_name: formData.firstName,
-        //   last_name: formData.lastName,
-        //   phone: formData.phone.replace(/\s/g, ''),
-        //   password: formData.usePassword ? undefined : formData.password,
-        // });
+    if (formData.phone.replace(/\s/g, '').length === 0) {
+      errors.phone = 'Phone number is required';
+      hasError = true;
+    } else if (!isPhoneValid) {
+      errors.phone = 'Enter a valid 10-digit phone number';
+      hasError = true;
+    }
 
-        console.log(`
+    if (!formData.usePassword) {
+      if (formData.password.trim() === '') {
+        errors.password = 'Password is required';
+        hasError = true;
+      } else if (!isPasswordValid) {
+        errors.password = 'Password must be at least 8 characters';
+        hasError = true;
+      }
+    }
 
-          FINISH LINE!!!
+    setErrorText(errors);
 
-            Message: ${response.data.message}
+    if (hasError) return;
+
+    try {
+      const token = accessToken;
+
+      const api = await getApiInstance();
+
+      const response = await api.post('/create-account/', {
+        first_name: formData.firstName,
+        last_name: formData.lastName,
+        phone: formData.phone.replace(/\s/g, ''),
+        password: formData.usePassword ? undefined : formData.password,
+      });
+
+      console.log(`
+
+          5.) Created Account
+
             Fullname: ${response.data.first_name} ${response.data.last_name}
             Phone: ${response.data.phone}
             Email: ${response.data.email}
@@ -150,17 +184,12 @@ export default function CreateAccountScreen({ navigation }: any) {
 
         `);
 
-        // await AsyncStorage.setItem('isCreated', 'true');
-
-        // await AsyncStorage.removeItem('accountProgress');
-
-        navigation.navigate('AllowLocation');
-      } catch (err: any) {
-        console.log(
-          'Error creating account:',
-          err.response?.data.messages.message || err.message,
-        );
-      }
+      navigation.navigate('AllowLocation');
+    } catch (err: any) {
+      console.log(
+        'Error creating account:',
+        err.response?.data.messages.message || err.message,
+      );
     }
   };
 
@@ -207,11 +236,19 @@ export default function CreateAccountScreen({ navigation }: any) {
                 <Inputs
                   bgColor={Colors.white}
                   label="First Name"
+                  error={errorText.firstName}
                   value={formData.firstName}
                   onChangeText={text => {
                     const updated = { ...formData, firstName: text };
                     setFormData(updated);
                     saveProgress(updated);
+
+                    if (submitted) setSubmitted(false);
+
+                    setErrorText(prev => ({
+                      ...prev,
+                      firstName: 'First Name',
+                    }));
                   }}
                   submitted={submitted}
                   isValid={isFirstNameValid}
@@ -222,11 +259,16 @@ export default function CreateAccountScreen({ navigation }: any) {
                 <Inputs
                   bgColor={Colors.white}
                   label="Last Name"
+                  error={errorText.lastName}
                   value={formData.lastName}
                   onChangeText={text => {
                     const updated = { ...formData, lastName: text };
                     setFormData(updated);
                     saveProgress(updated);
+
+                    if (submitted) setSubmitted(false);
+
+                    setErrorText(prev => ({ ...prev, lastName: 'Last Name' }));
                   }}
                   submitted={submitted}
                   isValid={isLastNameValid}
@@ -250,6 +292,7 @@ export default function CreateAccountScreen({ navigation }: any) {
                   <Inputs
                     bgColor={Colors.white}
                     label="Phone Number"
+                    error={errorText.phone}
                     value={formData.phone}
                     onChangeText={text => {
                       const updated = {
@@ -258,6 +301,12 @@ export default function CreateAccountScreen({ navigation }: any) {
                       };
                       setFormData(updated);
                       saveProgress(updated);
+
+                      if (submitted) setSubmitted(false);
+                      setErrorText(prev => ({
+                        ...prev,
+                        phone: 'Phone Number',
+                      }));
                     }}
                     submitted={submitted}
                     isValid={isPhoneValid}
@@ -271,6 +320,7 @@ export default function CreateAccountScreen({ navigation }: any) {
                   <Inputs
                     bgColor={Colors.white}
                     label="Password"
+                    error={errorText.password}
                     value={formData.password}
                     onChangeText={text => {
                       const updated = {
@@ -279,6 +329,9 @@ export default function CreateAccountScreen({ navigation }: any) {
                       };
                       setFormData(updated);
                       saveProgress(updated);
+
+                      if (submitted) setSubmitted(false);
+                      setErrorText(prev => ({ ...prev, password: 'Password' }));
                     }}
                     submitted={submitted}
                     isValid={isPasswordValid}

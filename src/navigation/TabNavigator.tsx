@@ -27,6 +27,7 @@ export default function BottomNavigator() {
           elevation: 5,
         },
         tabBarActiveTintColor: Colors.darkTangerine,
+        // tabBarInactiveTintColor: Colors.gray,
         tabBarInactiveTintColor: Colors.gray,
         tabBarLabelStyle: {
           fontSize: 10,
@@ -45,7 +46,7 @@ export default function BottomNavigator() {
             <Feather
               name="home"
               size={22}
-              color={focused ? Colors.darkTangerine : Colors.light}
+              color={focused ? Colors.darkTangerine : Colors.gray}
             />
           ),
         }}
@@ -60,7 +61,7 @@ export default function BottomNavigator() {
             <Feather
               name="shopping-bag"
               size={22}
-              color={focused ? Colors.darkTangerine : Colors.light}
+              color={focused ? Colors.darkTangerine : Colors.gray}
             />
           ),
         }}
@@ -75,7 +76,7 @@ export default function BottomNavigator() {
             <Feather
               name="search"
               size={22}
-              color={focused ? Colors.darkTangerine : Colors.light}
+              color={focused ? Colors.darkTangerine : Colors.gray}
             />
           ),
         }}
@@ -90,7 +91,7 @@ export default function BottomNavigator() {
             <Feather
               name="map"
               size={22}
-              color={focused ? Colors.darkTangerine : Colors.light}
+              color={focused ? Colors.darkTangerine : Colors.gray}
             />
           ),
         }}
@@ -105,7 +106,7 @@ export default function BottomNavigator() {
             <Feather
               name="user"
               size={22}
-              color={focused ? Colors.darkTangerine : Colors.light}
+              color={focused ? Colors.darkTangerine : Colors.gray}
             />
           ),
         }}

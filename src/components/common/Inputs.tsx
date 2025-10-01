@@ -26,6 +26,7 @@ interface InputProps {
   submitted?: boolean;
   isValid?: boolean;
   bgColor: string;
+  error: string;
 }
 
 export default function Inputs({
@@ -37,6 +38,7 @@ export default function Inputs({
   submitted = false,
   isValid = true,
   bgColor,
+  error,
 }: InputProps) {
   const [isFocused, setIsFocused] = useState(false);
 
@@ -50,7 +52,11 @@ export default function Inputs({
     }).start();
   }, [isFocused, value]);
 
-  const showError = submitted && !isValid;
+  const hasCustomError = error && error !== label;
+
+  const showError = (submitted && !isValid) || hasCustomError;
+
+  // const showError = submitted && !isValid;
 
   let borderColor = Colors.gray;
   let labelColor = Colors.mediumGray;
@@ -72,24 +78,45 @@ export default function Inputs({
         },
       ]}
     >
-      <Animated.Text
-        style={{
-          position: 'absolute',
-          left: 12,
-          backgroundColor: bgColor,
-          paddingHorizontal: 4,
-          top: labelAnim.interpolate({
-            inputRange: [0, 1],
-            outputRange: [14, -10],
-          }),
-          color: labelAnim.interpolate({
-            inputRange: [0, 1],
-            outputRange: [Colors.mediumGray, labelColor],
-          }),
-        }}
-      >
-        {label}
-      </Animated.Text>
+      {!showError ? (
+        <Animated.Text
+          style={{
+            position: 'absolute',
+            left: 12,
+            backgroundColor: bgColor,
+            paddingHorizontal: 4,
+            top: labelAnim.interpolate({
+              inputRange: [0, 1],
+              outputRange: [14, -10],
+            }),
+            color: labelAnim.interpolate({
+              inputRange: [0, 1],
+              outputRange: [Colors.mediumGray, labelColor],
+            }),
+          }}
+        >
+          {label}
+        </Animated.Text>
+      ) : (
+        <Animated.Text
+          style={{
+            position: 'absolute',
+            left: 12,
+            backgroundColor: bgColor,
+            paddingHorizontal: 4,
+            top: labelAnim.interpolate({
+              inputRange: [0, 1],
+              outputRange: [14, -10],
+            }),
+            color: labelAnim.interpolate({
+              inputRange: [0, 1],
+              outputRange: [Colors.red, labelColor],
+            }),
+          }}
+        >
+          {error}
+        </Animated.Text>
+      )}
       <TextInput
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
@@ -100,7 +127,7 @@ export default function Inputs({
         autoCapitalize={autoCapitalize}
       />
 
-      {showError && (
+      {/* {showError && (
         <Text
           style={{
             color: Colors.red,
@@ -113,7 +140,7 @@ export default function Inputs({
         >
           Enter a valid {label.toLowerCase()}
         </Text>
-      )}
+      )} */}
     </View>
   );
 }

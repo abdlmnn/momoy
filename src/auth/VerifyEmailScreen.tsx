@@ -37,7 +37,7 @@ const apiCheckEmail = axios.create({
 export default function VerifyEmailScreen({ navigation }: any) {
   const context = useContext(Context)!;
 
-  const { formData, setAccessToken, setRefreshToken } = context;
+  const { formData, setAccessToken, setRefreshToken, setFormData } = context;
 
   const [isVerified, setIsVerified] = useState(false);
 
@@ -102,6 +102,10 @@ export default function VerifyEmailScreen({ navigation }: any) {
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
+  }, []);
+
+  useEffect(() => {
+    setFormData(prev => ({ ...prev, password: '' }));
   }, []);
 
   const handleProceed = async () => {

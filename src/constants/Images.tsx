@@ -7,4 +7,5 @@ export default {
   pinLocation: require('../../assets/images/pinlocation.png'),
   profile: require('../../assets/images/profile.png'),
   philippineFlag: require('../../assets/images/philippines.png'),
+  login: require('../../assets/images/login1.png'),
 };

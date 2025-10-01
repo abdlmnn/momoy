@@ -21,6 +21,8 @@ import {
 } from 'react-native-permissions';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Context } from '../contexts/Context';
+import axios from 'axios';
+import { API_URL } from '@env';
 
 export default function AllowLocationScreen({ navigation }: any) {
   const { setLocation, setIsCreated } = useContext(Context)!;
@@ -46,6 +48,47 @@ export default function AllowLocationScreen({ navigation }: any) {
     ).start();
   }, []);
 
+  const saveAddress = async ({ latitude, longitude }: any) => {
+    try {
+      const token = await AsyncStorage.getItem('access');
+
+      let address = 'Unknown Address';
+
+      try {
+        const res = await fetch(
+          `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`,
+          {
+            headers: {
+              'User-Agent': 'Momoy/1.0 (legendsalih24@gmail.com)',
+            },
+          },
+        );
+        const data = await res.json();
+
+        if (data?.display_name) {
+          address = data.display_name;
+        }
+      } catch (err) {
+        console.error('Reverse geocoding failed', err);
+      }
+
+      const payload = {
+        latitude: parseFloat(latitude.toFixed(6)),
+        longitude: parseFloat(longitude.toFixed(6)),
+        address,
+        is_default: true,
+      };
+
+      const response = await axios.post(`${API_URL}/auth/addresses/`, payload, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      console.log('Address saved', response.data);
+    } catch (err: any) {
+      console.log('Address save failed', err.response?.data || err.message);
+    }
+  };
+
   const getLocation = () => {
     Geolocation.getCurrentPosition(
       async pos => {
@@ -61,12 +104,13 @@ export default function AllowLocationScreen({ navigation }: any) {
           `);
 
         await AsyncStorage.setItem('isCreated', 'true');
-        await AsyncStorage.removeItem('accountProgress');
+        setIsCreated(true);
 
-        // API for Google Map
         await setLocation({ latitude, longitude });
 
         navigation.replace('Index');
+
+        await saveAddress({ latitude, longitude });
 
         setLoading(false);
       },

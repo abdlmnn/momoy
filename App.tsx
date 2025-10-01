@@ -47,8 +47,6 @@ function AppContent() {
 
         const createdFlag = await AsyncStorage.getItem('isCreated');
 
-        // console.log('Access:', access, 'Refresh:', refresh);
-
         const isCreated = createdFlag === 'true';
 
         if (access && refresh) {
@@ -65,11 +63,6 @@ function AppContent() {
     };
 
     checkProgress();
-
-    // StatusBar.setBarStyle('light-content', true);
-    // StatusBar.setBackgroundColor(Colors.lightTangerine, true);
-
-    changeNavigationBarColor(Colors.white, true);
   }, []);
 
   // if (isLoading) {
@@ -97,12 +90,14 @@ function AppContent() {
             barStyle="light-content"
             backgroundColor={Colors.lightTangerine}
           />
-
+          {changeNavigationBarColor(Colors.lightTangerine, true)}
           <SplashScreen onFinish={() => setIsLoading(false)} />
         </>
       ) : (
         <>
           <StatusBar barStyle="dark-content" backgroundColor={Colors.white} />
+
+          {changeNavigationBarColor(Colors.white, true)}
 
           {initialRoute && <StackNavigator initialRouteName={initialRoute} />}
         </>

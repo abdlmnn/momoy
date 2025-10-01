@@ -16,6 +16,7 @@ type formData = {
   firstName: string;
   lastName: string;
   phone: string;
+  address: string;
   password: string;
   usePassword: boolean;
 };
@@ -47,6 +48,16 @@ type ContextType = {
   logout: () => void;
 };
 
+const initialFormData = {
+  email: '',
+  firstName: '',
+  lastName: '',
+  phone: '',
+  address: '',
+  password: '',
+  usePassword: true,
+};
+
 export const Context = createContext<ContextType | undefined>(undefined);
 
 export default function Provider({ children }: any) {
@@ -57,6 +68,7 @@ export default function Provider({ children }: any) {
     firstName: '',
     lastName: '',
     phone: '',
+    address: '',
     password: '',
     usePassword: true,
   });
@@ -105,15 +117,14 @@ export default function Provider({ children }: any) {
     setAccessToken(null);
     setRefreshToken(null);
     setUserLocation(null);
-
-    setFormData({ ...formData, email: '' });
+    setFormData(initialFormData);
 
     await AsyncStorage.multiRemove([
       'access',
       'refresh',
-      'userLocation',
       'accountProgress',
       'isCreated',
+      'userLocation',
     ]);
   };
 
