@@ -21,8 +21,7 @@ import {
 } from 'react-native-permissions';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Context } from '../contexts/Context';
-import axios from 'axios';
-import { API_URL } from '@env';
+import authApi from '../services/authApi';
 
 export default function AllowLocationScreen({ navigation }: any) {
   const { setLocation, setIsCreated } = useContext(Context)!;
@@ -50,8 +49,6 @@ export default function AllowLocationScreen({ navigation }: any) {
 
   const saveAddress = async ({ latitude, longitude }: any) => {
     try {
-      const token = await AsyncStorage.getItem('access');
-
       let address = 'Unknown Address';
 
       try {
@@ -79,9 +76,7 @@ export default function AllowLocationScreen({ navigation }: any) {
         is_default: true,
       };
 
-      const response = await axios.post(`${API_URL}/auth/addresses/`, payload, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await authApi.post('/auth/addresses/', payload);
 
       console.log('Address saved', response.data);
     } catch (err: any) {
@@ -108,7 +103,10 @@ export default function AllowLocationScreen({ navigation }: any) {
 
         await setLocation({ latitude, longitude });
 
-        navigation.replace('Index');
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'Index' }],
+        });
 
         await saveAddress({ latitude, longitude });
 

@@ -8,12 +8,10 @@ import {
 } from 'react-native';
 import React, { useEffect, useState, useContext } from 'react';
 import MapView, { Marker, Region } from 'react-native-maps';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import Colors from '../constants/Colors';
 import { useIsFocused } from '@react-navigation/native';
 import { Context } from '../contexts/Context';
-import axios from 'axios';
-import { API_URL } from '@env';
+import authApi from '../services/authApi';
 
 export default function MapScreen({ navigation }: any) {
   const { userLocation, setLocation, isLoggedIn } = useContext(Context)!;
@@ -41,11 +39,7 @@ export default function MapScreen({ navigation }: any) {
 
   const fetchUserAddresses = async () => {
     try {
-      const token = await AsyncStorage.getItem('access');
-
-      const res = await axios.get(`${API_URL}/auth/addresses/`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await authApi.get(`/auth/addresses`);
 
       const addresses = res.data;
       console.log('Fetched addresses', addresses);

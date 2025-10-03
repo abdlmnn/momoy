@@ -13,6 +13,7 @@ import {
   Linking,
   Alert,
   Platform,
+  StatusBar,
 } from 'react-native';
 import React, { useEffect, useRef, useState, useContext } from 'react';
 import AllowLocationScreen from '../components/AllowLocationScreen';
@@ -25,7 +26,7 @@ import { Context } from '../contexts/Context';
 import { API_URL } from '@env';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { saveTokens } from '../services/api';
+import api from '../services/api';
 
 const apiCheckEmail = axios.create({
   baseURL: `${API_URL}/auth`,
@@ -46,8 +47,8 @@ export default function VerifyEmailScreen({ navigation }: any) {
   useEffect(() => {
     const checkVerification = async () => {
       try {
-        const response = await apiCheckEmail.get(
-          `/check-verification/?email=${formData.email}`,
+        const response = await api.get(
+          `/auth/check-verification/?email=${formData.email}`,
         );
 
         const { email, is_verified, access, refresh } = response.data.data;
@@ -105,7 +106,14 @@ export default function VerifyEmailScreen({ navigation }: any) {
   }, []);
 
   useEffect(() => {
-    setFormData(prev => ({ ...prev, password: '' }));
+    setFormData(prev => ({
+      ...prev,
+      firstName: '',
+      lastName: '',
+      phone: '',
+      password: '',
+      usePassword: true,
+    }));
   }, []);
 
   const handleProceed = async () => {
@@ -116,7 +124,7 @@ export default function VerifyEmailScreen({ navigation }: any) {
 
   const handleResendEmail = async () => {
     try {
-      const response = await apiCheckEmail.post('/email-signup/', {
+      const response = await api.post('/auth/email-signup/', {
         email: formData.email,
       });
       console.log('Resent verification email:', response.data.message);
@@ -129,6 +137,8 @@ export default function VerifyEmailScreen({ navigation }: any) {
 
   return (
     <View style={StyleSignup.container}>
+      <StatusBar barStyle="dark-content" backgroundColor={Colors.white} />
+
       <View style={StyleSignup.topButton}>
         <TouchableOpacity onPress={() => navigation.navigate('SendEmail')}>
           <MaterialIcons name="arrow-back" style={StyleSignup.colorIcon} />
@@ -159,11 +169,11 @@ export default function VerifyEmailScreen({ navigation }: any) {
           ]}
         >
           <Text style={StyleSignup.continueText}>
-            {isVerified ? 'Proceed' : 'Check Inbox'}
+            {isVerified ? 'Proceed' : 'Check your inbox'}
           </Text>
         </Pressable>
 
-        <Pressable
+        {/* <Pressable
           onPress={handleResendEmail}
           style={({ pressed }) => [
             StyleSignup.resendLinkButton,
@@ -171,7 +181,7 @@ export default function VerifyEmailScreen({ navigation }: any) {
           ]}
         >
           <Text style={StyleSignup.sendText}>Resend Verification Link</Text>
-        </Pressable>
+        </Pressable> */}
       </View>
     </View>
   );

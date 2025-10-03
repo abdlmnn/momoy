@@ -12,6 +12,7 @@ import VerifyEmailScreen from '../auth/VerifyEmailScreen';
 import AllowLocationScreen from '../components/AllowLocationScreen';
 import CreateAccountScreen from '../auth/CreateAccountScreen';
 import GeocodeTest from '../components/TestGeoCode';
+import MapScreen from '../screens/MapScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -38,6 +39,8 @@ export default function StackNavigator({ initialRouteName }: any) {
         <Stack.Screen name="Login" component={LoginScreen} />
 
         <Stack.Screen name="Index" component={TabNavigator} />
+
+        <Stack.Screen name="Map" component={MapScreen} />
 
         <Stack.Screen name="Test" component={GeocodeTest} />
       </Stack.Navigator>

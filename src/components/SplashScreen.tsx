@@ -1,7 +1,15 @@
-import { StyleSheet, Text, View, Image, Animated } from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  Animated,
+  StatusBar,
+} from 'react-native';
 import React, { useEffect, useRef } from 'react';
 import Images from '../constants/Images';
 import Colors from '../constants/Colors';
+import changeNavigationBarColor from 'react-native-navigation-bar-color';
 
 export default function SplashScreen({ onFinish }: any) {
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -21,6 +29,11 @@ export default function SplashScreen({ onFinish }: any) {
   }, []);
   return (
     <View style={styles.container}>
+      <StatusBar
+        barStyle="light-content"
+        backgroundColor={Colors.lightTangerine}
+      />
+
       <Animated.Image
         source={Images.logo}
         style={[styles.logo, { opacity: fadeAnim }]}

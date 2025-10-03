@@ -10,6 +10,7 @@ import React, {
 import Colors from '../constants/Colors';
 import Images from '../constants/Images';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { isExpired } from '../services/expiredToken';
 
 type formData = {
   email: string;
@@ -81,7 +82,8 @@ export default function Provider({ children }: any) {
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [refreshToken, setRefreshToken] = useState<string | null>(null);
 
-  const isLoggedIn = !!accessToken && !!refreshToken;
+  const isLoggedIn =
+    !!accessToken && !!refreshToken && !isExpired(refreshToken);
 
   useEffect(() => {
     const loadSavedTokens = async () => {
@@ -117,7 +119,8 @@ export default function Provider({ children }: any) {
     setAccessToken(null);
     setRefreshToken(null);
     setUserLocation(null);
-    setFormData(initialFormData);
+    // setFormData(initialFormData);
+    setIsCreated(false);
 
     await AsyncStorage.multiRemove([
       'access',

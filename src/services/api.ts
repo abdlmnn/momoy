@@ -1,17 +1,10 @@
 import axios from 'axios';
 import { API_URL } from '@env';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Address } from '../types/types';
+import authApi from './authApi';
 
-export const apiAuth = (token: string) =>
-  axios.create({
-    baseURL: `${API_URL}/auth`,
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-    },
-  });
-
-const api = axios.create({
+export const api = axios.create({
   baseURL: API_URL,
   headers: {
     'Content-Type': 'application/json',
@@ -24,26 +17,6 @@ const apiGoogle = axios.create({
     'Content-Type': 'application/json',
   },
 });
-
-export async function getProducts() {
-  try {
-    const res = await api.get(`/api/products/`);
-    console.log('Fetched Products:', res.data);
-    return res.data;
-  } catch (error) {
-    console.log('Error Fetching Products:', error);
-  }
-}
-
-export async function getCategories() {
-  try {
-    const res = await api.get(`/api/categories/`);
-    console.log('Fetched Categories:', res.data);
-    return res.data;
-  } catch (error) {
-    console.log('Error Fetching Categories:', error);
-  }
-}
 
 apiGoogle.interceptors.request.use(async config => {
   const token = await AsyncStorage.getItem('access');
@@ -94,5 +67,36 @@ export const saveTokens = async (access: string, refresh: string) => {
   await AsyncStorage.setItem('access', access);
   await AsyncStorage.setItem('refresh', refresh);
 };
+
+export async function getProducts() {
+  try {
+    const res = await api.get(`/api/products/`);
+    console.log('Fetched Products:', res.data);
+    return res.data;
+  } catch (error) {
+    console.log('Error Fetching Products:', error);
+  }
+}
+
+export async function getCategories() {
+  try {
+    const res = await api.get(`/api/categories/`);
+    console.log('Fetched Categories:', res.data);
+    return res.data;
+  } catch (error) {
+    console.log('Error Fetching Categories:', error);
+  }
+}
+
+export async function getUserAddress(): Promise<Address[]> {
+  try {
+    const res = await authApi.get(`/auth/addresses/`);
+    console.log('Fetched Address:', res.data);
+    return res.data as Address[];
+  } catch (error) {
+    console.log('Error Fetching Address:', error);
+    return [];
+  }
+}
 
 export default api;

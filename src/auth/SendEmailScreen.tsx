@@ -11,6 +11,7 @@ import {
   TextStyle,
   Keyboard,
   ActivityIndicator,
+  StatusBar,
 } from 'react-native';
 import React, { useEffect, useRef, useState, useContext } from 'react';
 import AllowLocationScreen from '../components/AllowLocationScreen';
@@ -20,16 +21,6 @@ import Colors from '../constants/Colors';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { Context } from '../contexts/Context';
 import api from '../services/api';
-
-import { API_URL } from '@env';
-import axios from 'axios';
-
-const apiEmail = axios.create({
-  baseURL: `${API_URL}/auth`,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
 
 export default function SendEmailScreen({ navigation }: any) {
   const context = useContext(Context)!;
@@ -63,7 +54,7 @@ export default function SendEmailScreen({ navigation }: any) {
       setLoading(true);
       setError('');
 
-      const response = await apiEmail.post('/email-signup/', {
+      const response = await api.post('/auth/email-signup/', {
         email: formData.email,
       });
 
@@ -102,6 +93,8 @@ export default function SendEmailScreen({ navigation }: any) {
 
   return (
     <View style={StyleSignup.container}>
+      <StatusBar barStyle="dark-content" backgroundColor={Colors.white} />
+
       <View style={StyleSignup.topButton}>
         <TouchableOpacity
           onPress={() => {

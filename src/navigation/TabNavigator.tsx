@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { StatusBar, StyleSheet, Text, View } from 'react-native';
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import HomeScreen from '../screens/HomeScreen';
@@ -20,7 +20,7 @@ export default function BottomNavigator() {
       screenOptions={{
         headerShown: false,
         tabBarStyle: {
-          backgroundColor: Colors.white,
+          // backgroundColor: Colors.white,
           height: 60,
           // borderTopWidth: 1,
           // borderTopColor: Colors.light,
@@ -28,7 +28,7 @@ export default function BottomNavigator() {
         },
         tabBarActiveTintColor: Colors.darkTangerine,
         // tabBarInactiveTintColor: Colors.gray,
-        tabBarInactiveTintColor: Colors.gray,
+        tabBarInactiveTintColor: Colors.grayBar,
         tabBarLabelStyle: {
           fontSize: 10,
           textAlign: 'center',
@@ -41,12 +41,13 @@ export default function BottomNavigator() {
         name="Home"
         component={HomeScreen}
         options={{
+          lazy: true,
           tabBarLabel: 'Home',
           tabBarIcon: ({ focused, size }) => (
             <Feather
               name="home"
               size={22}
-              color={focused ? Colors.darkTangerine : Colors.gray}
+              color={focused ? Colors.darkTangerine : Colors.grayBar}
             />
           ),
         }}
@@ -61,7 +62,7 @@ export default function BottomNavigator() {
             <Feather
               name="shopping-bag"
               size={22}
-              color={focused ? Colors.darkTangerine : Colors.gray}
+              color={focused ? Colors.darkTangerine : Colors.grayBar}
             />
           ),
         }}
@@ -76,26 +77,26 @@ export default function BottomNavigator() {
             <Feather
               name="search"
               size={22}
-              color={focused ? Colors.darkTangerine : Colors.gray}
+              color={focused ? Colors.darkTangerine : Colors.grayBar}
             />
           ),
         }}
       />
 
-      <Tab.Screen
-        name="Map"
+      {/* <Tab.Screen
+        name="Notification"
         component={MapScreen}
         options={{
-          tabBarLabel: 'Map',
+          tabBarLabel: 'Notification',
           tabBarIcon: ({ focused, size }) => (
             <Feather
-              name="map"
+              name="notification"
               size={22}
               color={focused ? Colors.darkTangerine : Colors.gray}
             />
           ),
         }}
-      />
+      /> */}
 
       <Tab.Screen
         name="Account"
@@ -106,7 +107,7 @@ export default function BottomNavigator() {
             <Feather
               name="user"
               size={22}
-              color={focused ? Colors.darkTangerine : Colors.gray}
+              color={focused ? Colors.darkTangerine : Colors.grayBar}
             />
           ),
         }}

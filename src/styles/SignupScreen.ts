@@ -110,7 +110,7 @@ export const StyleSignup = StyleSheet.create({
     backgroundColor: Colors.darkTangerine,
     paddingVertical: 12,
     borderRadius: 7,
-    marginBottom: 12,
+    // marginBottom: 12,
   },
   buttonPressed: {
     backgroundColor: Colors.lightTangerine,

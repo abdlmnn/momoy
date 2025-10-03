@@ -11,6 +11,7 @@ import {
   Platform,
   Animated,
   ActivityIndicator,
+  StatusBar,
 } from 'react-native';
 import React, { useEffect, useRef, useState, useContext } from 'react';
 import Inputs, { Prefix } from '../components/common/Inputs';
@@ -21,17 +22,11 @@ import Colors from '../constants/Colors';
 import Images from '../constants/Images';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
-import axios from 'axios';
-import { API_URL } from '@env';
-import { apiAuth } from '../services/api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import CheckBox from '@react-native-community/checkbox';
 
-const apiLogin = axios.create({
-  baseURL: `${API_URL}/auth`,
-  headers: { 'Content-Type': 'application/json' },
-});
+import authApi from '../services/authApi';
 
 export default function LoginScreen({ navigation }: any) {
   const context = useContext(Context)!;
@@ -84,7 +79,7 @@ export default function LoginScreen({ navigation }: any) {
     setLoadingLogin(true);
 
     try {
-      const response = await apiLogin.post('/login/', {
+      const response = await authApi.post('/auth/login/', {
         email: formData.email,
         password: formData.password,
       });
@@ -122,11 +117,8 @@ export default function LoginScreen({ navigation }: any) {
 
       if (errorMsg.toLowerCase().includes('email')) {
         setErrorEmail(errorMsg);
-        // setFormData(prev => ({ ...prev, email: '' }));
-        // setFormData(prev => ({ ...prev, password: '' }));
       } else if (errorMsg.toLowerCase().includes('password')) {
         setErrorPassword(errorMsg);
-        // setFormData(prev => ({ ...prev, password: '' }));
       } else if (errorMsg.toLowerCase().includes('not verified')) {
         setErrorEmail(errorMsg);
       } else {
@@ -141,6 +133,8 @@ export default function LoginScreen({ navigation }: any) {
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <View style={StyleSignup.container}>
+        <StatusBar barStyle="dark-content" backgroundColor={Colors.white} />
+
         <View
           style={[
             StyleSignup.topButton,
@@ -236,6 +230,7 @@ export default function LoginScreen({ navigation }: any) {
               StyleSignup.checkInboxButton,
               {
                 backgroundColor: isValid ? Colors.darkTangerine : Colors.gray,
+                marginBottom: 12,
               },
               pressed && StyleSignup.buttonPressed,
             ]}

@@ -10,6 +10,7 @@ import {
   ScrollView,
   Platform,
   Animated,
+  StatusBar,
 } from 'react-native';
 import React, { useEffect, useRef, useState, useContext } from 'react';
 import Inputs, { Prefix } from '../components/common/Inputs';
@@ -22,7 +23,6 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 import axios from 'axios';
 import { API_URL } from '@env';
-import { apiAuth } from '../services/api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import CheckBox from '@react-native-community/checkbox';
@@ -196,6 +196,8 @@ export default function CreateAccountScreen({ navigation }: any) {
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <View style={StyleSignup.container}>
+        <StatusBar barStyle="dark-content" backgroundColor={Colors.white} />
+
         <View
           style={[
             StyleSignup.topButton,

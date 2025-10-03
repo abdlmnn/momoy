@@ -20,3 +20,9 @@ export interface Categories {
   id: number;
   name: string;
 }
+
+export interface Address {
+  id: number;
+  address: string;
+  is_default: boolean;
+}

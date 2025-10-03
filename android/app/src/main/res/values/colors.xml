@@ -1,3 +1,4 @@
 <resources>
     <color name="splash_background">#FAAF5E</color>
+    <color name="white">#FFFF</color>
 </resources>

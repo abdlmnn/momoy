@@ -84,6 +84,8 @@ export default function SignupScreen({ navigation }: any) {
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <View style={StyleSignup.container}>
+        <StatusBar barStyle="dark-content" backgroundColor={Colors.white} />
+
         <View style={StyleSignup.topButton}>
           <TouchableOpacity onPress={() => navigation.navigate('Welcome')}>
             <MaterialIcons name="arrow-back" style={StyleSignup.colorIcon} />
