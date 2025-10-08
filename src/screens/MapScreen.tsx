@@ -12,8 +12,11 @@ import Colors from '../constants/Colors';
 import { useIsFocused } from '@react-navigation/native';
 import { Context } from '../contexts/Context';
 import authApi from '../services/authApi';
+import { GOOGLE_MAPS_API_KEY } from '@env';
 
 export default function MapScreen({ navigation }: any) {
+  console.log('Maps API Key:', GOOGLE_MAPS_API_KEY);
+
   const { userLocation, setLocation, isLoggedIn } = useContext(Context)!;
 
   const [loading, setLoading] = useState(true);
