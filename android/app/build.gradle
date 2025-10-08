@@ -4,10 +4,15 @@ apply plugin: "com.facebook.react"
 
 apply from: "../../node_modules/react-native-vector-icons/fonts.gradle"
 
+apply from: project(':react-native-config').projectDir.getPath() + "/dotenv.gradle"
+
+
 import java.util.Properties
 
 def getEnvValue(String key) {
+    // def propsFile = rootProject.file(".env")
     def propsFile = rootProject.file(".env")
+
     def props = new Properties()
     if (propsFile.exists()) {
         props.load(new FileInputStream(propsFile))
