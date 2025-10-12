@@ -37,6 +37,9 @@ export default function LoginScreen({ navigation }: any) {
   const [loadingLogin, setLoadingLogin] = useState(false);
   const [loadingLink, setLoadingLink] = useState(false);
 
+  const [submittedPasswordLogin, setSubmittedPasswordLogin] = useState(false);
+  const [submittedEmailLink, setSubmittedEmailLink] = useState(false);
+
   const [errorEmail, setErrorEmail] = useState('Email');
   const [errorPassword, setErrorPassword] = useState('Password');
 
@@ -50,7 +53,9 @@ export default function LoginScreen({ navigation }: any) {
   }, []);
 
   const handleLoginPassword = async () => {
-    setSubmitted(true);
+    // setSubmitted(true);
+    setSubmittedPasswordLogin(true);
+    setSubmittedEmailLink(false);
 
     let hasError = false;
 
@@ -130,6 +135,65 @@ export default function LoginScreen({ navigation }: any) {
     }
   };
 
+  const handleSendLoginLink = async () => {
+    setSubmittedEmailLink(true);
+    setSubmittedPasswordLogin(false);
+
+    setErrorPassword('Password');
+
+    if (!isEmailValid) {
+      setErrorEmail('Enter a valid email');
+      return;
+    }
+
+    setLoadingLink(true);
+
+    try {
+      console.log(`
+
+          2.) SEND LOGIN LINK
+          
+            To: ${formData.email}
+
+        `);
+
+      const response = await authApi.post('/auth/send-login-link/', {
+        email: formData.email,
+      });
+
+      console.log(`
+
+          3.) CHECK YOUR INBOX
+
+            Message: ${response.data.message}
+
+        `);
+
+      navigation.navigate('VerifyLogin');
+    } catch (err: any) {
+      const errorMsg: string =
+        err.response?.data?.error ||
+        err.response?.data?.message ||
+        'Network or server error';
+
+      console.log(`
+
+          BACKEND!!!
+          
+            Message: ${errorMsg}
+
+        `);
+
+      setErrorEmail('Email');
+
+      if (errorMsg.toLowerCase().includes('email')) {
+        setErrorEmail(errorMsg);
+      }
+    } finally {
+      setLoadingLink(false);
+    }
+  };
+
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <View style={StyleSignup.container}>
@@ -184,13 +248,14 @@ export default function LoginScreen({ navigation }: any) {
                   onChangeText={text => {
                     const updated = { ...formData, email: text };
                     setFormData(updated);
-                    if (submitted) {
-                      setSubmitted(false);
+                    if (submittedPasswordLogin || submittedEmailLink) {
+                      setSubmittedPasswordLogin(false);
+                      setSubmittedEmailLink(false);
                     }
 
                     setErrorEmail('Email');
                   }}
-                  submitted={submitted}
+                  submitted={submittedPasswordLogin || submittedEmailLink}
                   isValid={isEmailValid}
                 />
               </View>
@@ -207,13 +272,13 @@ export default function LoginScreen({ navigation }: any) {
                       password: text,
                     };
                     setFormData(updated);
-                    if (submitted) {
-                      setSubmitted(false);
+                    if (submittedPasswordLogin) {
+                      setSubmittedPasswordLogin(false);
                     }
 
                     setErrorPassword('Password');
                   }}
-                  submitted={submitted}
+                  submitted={submittedPasswordLogin}
                   isValid={isPasswordValid}
                 />
               </View>
@@ -243,7 +308,7 @@ export default function LoginScreen({ navigation }: any) {
           </Pressable>
 
           <Pressable
-            // onPress={handleResendEmail}
+            onPress={handleSendLoginLink}
             disabled={!isEmailValid || loadingLink}
             style={({ pressed }) => [
               StyleSignup.resendLinkButton,
