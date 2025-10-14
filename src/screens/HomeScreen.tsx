@@ -129,21 +129,6 @@ export default function HomeScreen({ navigation }: any) {
     fetchAddress();
   }, [isLoggedIn]);
 
-  if (loadingData) {
-    return (
-      <View
-        style={{
-          flex: 1,
-          justifyContent: 'center',
-          alignItems: 'center',
-          backgroundColor: Colors.white,
-        }}
-      >
-        <ActivityIndicator size="large" color={Colors.lightTangerine} />
-      </View>
-    );
-  }
-
   return (
     <View style={[StyleHome.container]}>
       <StatusBar
@@ -263,123 +248,124 @@ export default function HomeScreen({ navigation }: any) {
           </View>
         </View>
 
-        {/* Products */}
-        <FlatList
-          data={filteredProducts}
-          keyExtractor={item => item.id.toString()}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingBottom: 20 }}
-          refreshing={loadingData}
-          onRefresh={() => {
-            setSelectedCategory(allProductsId);
-            setSelectedType(null);
-            refreshData?.();
-          }}
-          renderItem={({ item }) => {
-            const inventories = item.inventories || [];
-            const prices = inventories.map((v: any) => v.price);
-            const hasInventories = prices.length > 0;
-            const minPrice = hasInventories ? Math.min(...prices) : item.price;
-            const maxPrice = hasInventories ? Math.max(...prices) : item.price;
+        {loadingData ? (
+          <View style={{ flex: 1, justifyContent: 'center' }}>
+            <ActivityIndicator size="large" color={Colors.lightTangerine} />
+          </View>
+        ) : (
+          <FlatList
+            data={filteredProducts}
+            keyExtractor={item => item.id.toString()}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ paddingBottom: 20 }}
+            refreshing={loadingData}
+            onRefresh={() => {
+              setSelectedCategory(allProductsId);
+              setSelectedType(null);
+              refreshData?.();
+            }}
+            renderItem={({ item }) => {
+              const inventories = item.inventories || [];
+              const prices = inventories.map((v: any) => v.price);
+              const hasInventories = prices.length > 0;
+              const minPrice = hasInventories
+                ? Math.min(...prices)
+                : item.price;
+              const maxPrice = hasInventories
+                ? Math.max(...prices)
+                : item.price;
 
-            return (
-              <Pressable
-                onPress={() => {
-                  console.log({ product: item });
-                }}
-                // disabled={isOutOfStock}
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  backgroundColor: Colors.white,
-                  paddingVertical: 20,
-                  borderBottomWidth: 0.4,
-                  borderColor: Colors.grayBar2,
-                  position: 'relative',
-                }}
-              >
-                {/* Left: Image Placeholder */}
-                <View
+              return (
+                <Pressable
+                  onPress={() => {
+                    console.log({ product: item });
+                  }}
+                  // disabled={isOutOfStock}
                   style={{
-                    width: 80,
-                    height: 80,
-                    // backgroundColor: Colors.light,
-                    borderRadius: 4,
-                    justifyContent: 'center',
+                    flexDirection: 'row',
                     alignItems: 'center',
-                    marginRight: 12,
+                    backgroundColor: Colors.white,
+                    paddingVertical: 20,
+                    borderBottomWidth: 0.4,
+                    borderColor: Colors.grayBar2,
+                    position: 'relative',
                   }}
                 >
-                  <SwitchImages
-                    images={inventories
-                      .filter((v: any) => v.image)
-                      .map((v: any) => ({
-                        image: `${API_URL}${v.image}`,
-                        isNew: v.is_new,
-                      }))}
-                  />
-                </View>
-
-                {/* Middle: Product Info */}
-                <View style={{ flex: 1, gap: 5 }}>
-                  <Text
-                    style={{
-                      fontSize: 14,
-                      fontWeight: '700',
-                      // marginBottom: 4,
-                      color: Colors.charcoal,
-                      textTransform: 'uppercase',
-                    }}
-                  >
-                    {item.name}
-                  </Text>
-
+                  {/* Left: Image Placeholder */}
                   <View
                     style={{
-                      // borderWidth: 1,
-                      flexDirection: 'row',
-                      justifyContent: 'space-between',
+                      width: 80,
+                      height: 80,
+                      borderRadius: 4,
+                      justifyContent: 'center',
                       alignItems: 'center',
-                      // gap: 20,
+                      marginRight: 12,
                     }}
                   >
+                    <SwitchImages
+                      images={inventories
+                        .filter((v: any) => v.image)
+                        .map((v: any) => ({
+                          image: `${API_URL}${v.image}`,
+                          isNew: v.is_new,
+                        }))}
+                    />
+                  </View>
+
+                  {/* Middle: Product Info */}
+                  <View style={{ flex: 1, gap: 5 }}>
                     <Text
                       style={{
                         fontSize: 14,
+                        fontWeight: '700',
                         color: Colors.charcoal,
-                        // marginBottom: 2,
+                        textTransform: 'uppercase',
                       }}
                     >
-                      {hasInventories
-                        ? minPrice === maxPrice
-                          ? `₱ ${minPrice}`
-                          : `₱ ${minPrice} - ${maxPrice}`
-                        : `₱ ${item.price}`}
+                      {item.name}
                     </Text>
 
-                    {/* Right: Add to Cart (+ button) */}
-                    <Pressable
-                      onPress={() => console.log('Add to cart:', item.name)}
+                    <View
                       style={{
-                        // backgroundColor: isOutOfStock
-                        //   ? Colors.grayBar2
-                        //   : Colors.lightTangerine,
-                        backgroundColor: Colors.darkTangerine,
-                        width: 30,
-                        height: 30,
-                        borderRadius: 20,
-                        justifyContent: 'center',
+                        flexDirection: 'row',
+                        justifyContent: 'space-between',
                         alignItems: 'center',
                       }}
                     >
-                      <Feather name="plus" size={16} color={Colors.white} />
-                    </Pressable>
+                      <Text
+                        style={{
+                          fontSize: 14,
+                          color: Colors.charcoal,
+                        }}
+                      >
+                        {hasInventories
+                          ? minPrice === maxPrice
+                            ? `₱ ${minPrice}`
+                            : `₱ ${minPrice} - ${maxPrice}`
+                          : `₱ ${item.price}`}
+                      </Text>
+
+                      {/* Right: Add to Cart (+ button) */}
+                      <Pressable
+                        onPress={() => console.log('Add to cart:', item.name)}
+                        style={{
+                          backgroundColor: Colors.darkTangerine,
+                          width: 30,
+                          height: 30,
+                          borderRadius: 20,
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                        }}
+                      >
+                        <Feather name="plus" size={16} color={Colors.white} />
+                      </Pressable>
+                    </View>
                   </View>
-                </View>
-              </Pressable>
-            );
-          }}
-        />
+                </Pressable>
+              );
+            }}
+          />
+        )}
       </View>
 
       {/* Filter Modal */}
