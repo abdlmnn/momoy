@@ -8,4 +8,7 @@ export default {
   profile: require('../../assets/images/profile.png'),
   philippineFlag: require('../../assets/images/philippines.png'),
   login: require('../../assets/images/login1.png'),
+
+  img: require('../../assets/images/azu_1kg.png'),
+  img2: require('../../assets/images/azu_20kg.png'),
 };

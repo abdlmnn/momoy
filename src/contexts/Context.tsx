@@ -12,6 +12,10 @@ import Images from '../constants/Images';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { isExpired } from '../services/expiredToken';
 
+import { getProducts } from '../services/api';
+import { getCategories } from '../services/api';
+import { getInventory } from '../services/api';
+
 type formData = {
   email: string;
   firstName: string;
@@ -21,6 +25,10 @@ type formData = {
   password: string;
   usePassword: boolean;
 };
+
+type Product = any;
+type Category = any;
+type Inventory = any;
 
 type ContextType = {
   formData: formData;
@@ -47,6 +55,13 @@ type ContextType = {
   ) => Promise<void>;
 
   logout: () => void;
+
+  products: Product[];
+  categories: Category[];
+  inventories: Inventory[];
+
+  loadingData: boolean;
+  refreshData: () => Promise<void>;
 };
 
 const initialFormData = {
@@ -82,8 +97,33 @@ export default function Provider({ children }: any) {
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [refreshToken, setRefreshToken] = useState<string | null>(null);
 
+  const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [inventories, setInventories] = useState<Inventory[]>([]);
+
+  const [loadingData, setLoadingData] = useState(false);
+
   const isLoggedIn =
     !!accessToken && !!refreshToken && !isExpired(refreshToken);
+
+  const refreshData = async () => {
+    try {
+      setLoadingData(true);
+      const [prodData, catData, invData] = await Promise.all([
+        getProducts(),
+        getCategories(),
+        getInventory(),
+      ]);
+
+      setProducts(prodData);
+      setCategories(catData);
+      setInventories(invData);
+    } catch (error) {
+      console.log('Error fetching data:', error);
+    } finally {
+      setLoadingData(false);
+    }
+  };
 
   useEffect(() => {
     const loadSavedTokens = async () => {
@@ -106,6 +146,14 @@ export default function Provider({ children }: any) {
 
     loadSavedTokens();
   }, []);
+
+  useEffect(() => {
+    refreshData();
+  }, []);
+
+  useEffect(() => {
+    if (isLoggedIn) refreshData();
+  }, [isLoggedIn]);
 
   const setLocation = async (
     loc: { latitude: number; longitude: number } | null,
@@ -153,6 +201,13 @@ export default function Provider({ children }: any) {
     setLocation,
 
     logout,
+
+    products,
+    categories,
+    inventories,
+
+    loadingData,
+    refreshData,
   };
 
   return <Context.Provider value={global}>{children}</Context.Provider>;

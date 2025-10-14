@@ -88,6 +88,16 @@ export async function getCategories() {
   }
 }
 
+export async function getInventory() {
+  try {
+    const res = await api.get(`/api/inventory/`);
+    console.log('Fetched Inventory:', res.data);
+    return res.data;
+  } catch (error) {
+    console.log('Error Fetching Inventory:', error);
+  }
+}
+
 export async function getUserAddress(): Promise<Address[]> {
   try {
     const res = await authApi.get(`/auth/addresses/`);

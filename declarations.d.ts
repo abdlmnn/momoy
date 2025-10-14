@@ -15,3 +15,9 @@ declare module 'react-native-vector-icons/Lucide' {
   const content: any;
   export default content;
 }
+
+declare module 'react-native-vector-icons/Octicons' {
+  // import Octicons from 'react-native-vector-icons/Octicons';
+  const content: any;
+  export default content;
+}

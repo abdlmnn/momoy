@@ -23,17 +23,13 @@ import { StyleHome } from '../styles/HomeScreen';
 import Colors from '../constants/Colors';
 import Lucide from 'react-native-vector-icons/Lucide';
 import Feather from 'react-native-vector-icons/Feather';
+import Octicons from 'react-native-vector-icons/Octicons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Address } from '../types/types';
 import { Context } from '../contexts/Context';
-
-const categories = [
-  { id: 0, name: 'All Products' },
-  { id: 1, name: 'Kitten' },
-  { id: 2, name: 'Adult Cat' },
-  { id: 3, name: 'Puppy' },
-  { id: 4, name: 'Adult Dog' },
-];
+import { SwitchImages } from '../components/SwitchImages';
+import Images from '../constants/Images';
+import { API_URL } from '@env';
 
 const productTypes = [
   'Dry Food',
@@ -45,65 +41,66 @@ const productTypes = [
   'Other Essentials',
   'Merch',
 ];
-const products = [
-  {
-    id: 1,
-    name: 'AOZI DOG FOOD DRY - PUPPY',
-    price: 1200,
-    categoryId: 3,
-    productType: 'Dry Food',
-    isNew: true,
-    stock: 5,
-  },
-  {
-    id: 2,
-    name: 'AOZI DOG FOOD DRY GOLD - ADULT (SACK)',
-    price: 450,
-    categoryId: 4,
-    productType: 'Dry Food',
-    stock: 0,
-  },
-  {
-    id: 3,
-    name: 'Pet Collar',
-    price: 350,
-    categoryId: 2,
-    productType: 'Other Essentials',
-    stock: 3,
-    isNew: true,
-  },
-  {
-    id: 4,
-    name: 'Scratching Post',
-    price: 700,
-    categoryId: 1,
-    productType: 'Other Essentials',
-    stock: 10,
-    isNew: true,
-  },
-  {
-    id: 5,
-    name: 'Dog Bed',
-    price: 1500,
-    categoryId: 2,
-    productType: 'Other Essentials',
-    stock: 0,
-  },
-];
 
 export default function HomeScreen({ navigation }: any) {
-  const { isLoggedIn } = useContext(Context)!;
+  const {
+    isLoggedIn,
+    products = [],
+    categories = [],
+    inventories = [],
+    loadingData,
+    refreshData,
+  } = useContext(Context) || {};
 
   const [selectedCategory, setSelectedCategory] = useState<number>(0);
-
   const [filterVisible, setFilterVisible] = useState(false);
   const [selectedType, setSelectedType] = useState<string | null>(null);
 
-  const filteredProducts = products.filter(p => {
+  useEffect(() => {
+    refreshData?.();
+  }, []);
+
+  useEffect(() => {
+    if (categories && categories.length > 0) {
+      const allCat = categories.find(c => c.name.toLowerCase().includes('all'));
+
+      if (allCat) {
+        setSelectedCategory(allCat.id);
+      } else {
+        const firstValid = categories.find(
+          c => !['cat', 'dog'].includes(c.name.toLowerCase()),
+        );
+        if (firstValid) setSelectedCategory(firstValid.id);
+      }
+    }
+  }, [categories]);
+
+  const allProductsCategory = (categories || []).find(c =>
+    c.name.toLowerCase().includes('all'),
+  );
+
+  const allProductsId = allProductsCategory ? allProductsCategory.id : 0;
+
+  const combinedProducts = (products || []).map(product => ({
+    ...product,
+    inventories: product.variants || [],
+  }));
+
+  const filteredProducts = combinedProducts.filter(p => {
+    const hasVariants = p.inventories && p.inventories.length > 0;
+
     const matchesCategory =
-      selectedCategory === 0 || p.categoryId === selectedCategory;
-    const matchesType = !selectedType || p.productType === selectedType;
-    return matchesCategory && matchesType;
+      selectedCategory === allProductsId ||
+      String(p.categoryId) === String(selectedCategory);
+
+    const backendProductType = selectedType
+      ? selectedType.replace(/ /g, '_').toLowerCase()
+      : null;
+
+    const matchesType =
+      !backendProductType || p.product_type === backendProductType;
+
+    return hasVariants && matchesCategory && matchesType;
   });
 
   const [address, setAddress] = useState<Address | null>(null);
@@ -131,6 +128,21 @@ export default function HomeScreen({ navigation }: any) {
 
     fetchAddress();
   }, [isLoggedIn]);
+
+  if (loadingData) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          justifyContent: 'center',
+          alignItems: 'center',
+          backgroundColor: Colors.white,
+        }}
+      >
+        <ActivityIndicator size="large" color={Colors.lightTangerine} />
+      </View>
+    );
+  }
 
   return (
     <View style={[StyleHome.container]}>
@@ -195,7 +207,7 @@ export default function HomeScreen({ navigation }: any) {
               },
             ]}
           >
-            <Feather name="menu" size={22} color={Colors.grayBar2} />
+            <Octicons name="filter" size={22} color={Colors.grayBar2} />
           </Pressable>
         </View>
       </View>
@@ -214,7 +226,9 @@ export default function HomeScreen({ navigation }: any) {
 
           <View style={{ flexDirection: 'row', gap: 10 }}>
             <FlatList
-              data={categories}
+              data={categories.filter(
+                item => !['cat', 'dog'].includes(item.name.toLowerCase()), // ❌ hide Cat & Dog
+              )}
               keyExtractor={item => item.id.toString()}
               horizontal
               showsHorizontalScrollIndicator={false}
@@ -255,13 +269,22 @@ export default function HomeScreen({ navigation }: any) {
           keyExtractor={item => item.id.toString()}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingBottom: 20 }}
+          refreshing={loadingData}
+          onRefresh={() => {
+            setSelectedCategory(allProductsId);
+            setSelectedType(null);
+            refreshData?.();
+          }}
           renderItem={({ item }) => {
-            const isOutOfStock = item.stock === 0;
+            const inventories = item.inventories || [];
+            const prices = inventories.map((v: any) => v.price);
+            const hasInventories = prices.length > 0;
+            const minPrice = hasInventories ? Math.min(...prices) : item.price;
+            const maxPrice = hasInventories ? Math.max(...prices) : item.price;
 
             return (
               <Pressable
                 onPress={() => {
-                  // navigation.navigate('ProductDetails', { product: item })
                   console.log({ product: item });
                 }}
                 // disabled={isOutOfStock}
@@ -280,49 +303,22 @@ export default function HomeScreen({ navigation }: any) {
                   style={{
                     width: 80,
                     height: 80,
-                    backgroundColor: Colors.light,
+                    // backgroundColor: Colors.light,
                     borderRadius: 4,
                     justifyContent: 'center',
                     alignItems: 'center',
                     marginRight: 12,
                   }}
                 >
-                  {/* <Text
-                    style={{
-                      fontSize: 20,
-                      fontWeight: 'bold',
-                      color: Colors.charcoal,
-                    }}
-                  >
-                    IMG
-                  </Text> */}
+                  <SwitchImages
+                    images={inventories
+                      .filter((v: any) => v.image)
+                      .map((v: any) => ({
+                        image: `${API_URL}${v.image}`,
+                        isNew: v.is_new,
+                      }))}
+                  />
                 </View>
-
-                {/* NEW Tag positioned absolute */}
-                {item.isNew && (
-                  <View
-                    style={{
-                      position: 'absolute',
-                      top: 13,
-                      left: 22,
-                      backgroundColor: Colors.lightTangerine,
-                      paddingHorizontal: 6,
-                      paddingVertical: 2,
-                      borderRadius: 6,
-                      elevation: 3,
-                    }}
-                  >
-                    <Text
-                      style={{
-                        fontSize: 10,
-                        fontWeight: '700',
-                        color: Colors.white,
-                      }}
-                    >
-                      NEW
-                    </Text>
-                  </View>
-                )}
 
                 {/* Middle: Product Info */}
                 <View style={{ flex: 1, gap: 5 }}>
@@ -332,6 +328,7 @@ export default function HomeScreen({ navigation }: any) {
                       fontWeight: '700',
                       // marginBottom: 4,
                       color: Colors.charcoal,
+                      textTransform: 'uppercase',
                     }}
                   >
                     {item.name}
@@ -353,20 +350,12 @@ export default function HomeScreen({ navigation }: any) {
                         // marginBottom: 2,
                       }}
                     >
-                      ₱{item.price}
+                      {hasInventories
+                        ? minPrice === maxPrice
+                          ? `₱ ${minPrice}`
+                          : `₱ ${minPrice} - ${maxPrice}`
+                        : `₱ ${item.price}`}
                     </Text>
-
-                    {/* {item.isNew && (
-                      <Text
-                        style={{
-                          fontSize: 12,
-                          color: Colors.lightTangerine,
-                          paddingRight: 20,
-                        }}
-                      >
-                        NEW
-                      </Text>
-                    )} */}
 
                     {/* Right: Add to Cart (+ button) */}
                     <Pressable
@@ -432,38 +421,40 @@ export default function HomeScreen({ navigation }: any) {
                 marginBottom: 20,
               }}
             >
-              {categories.map(cat => (
-                <Pressable
-                  key={cat.id}
-                  onPress={() => setSelectedCategory(cat.id)}
-                  style={{
-                    paddingHorizontal: 12,
-                    paddingVertical: 8,
-                    borderRadius: 8,
-                    borderWidth: 1,
-                    borderColor:
-                      selectedCategory === cat.id
-                        ? Colors.lightTangerine
-                        : Colors.gray,
-                    backgroundColor:
-                      selectedCategory === cat.id
-                        ? Colors.lightTangerine
-                        : Colors.white,
-                  }}
-                >
-                  <Text
+              {categories
+                .filter(cat => !['cat', 'dog'].includes(cat.name.toLowerCase()))
+                .map(cat => (
+                  <Pressable
+                    key={cat.id}
+                    onPress={() => setSelectedCategory(cat.id)}
                     style={{
-                      color:
+                      paddingHorizontal: 12,
+                      paddingVertical: 8,
+                      borderRadius: 8,
+                      borderWidth: 1,
+                      borderColor:
                         selectedCategory === cat.id
-                          ? Colors.white
-                          : Colors.mediumGray,
-                      fontWeight: '600',
+                          ? Colors.lightTangerine
+                          : Colors.gray,
+                      backgroundColor:
+                        selectedCategory === cat.id
+                          ? Colors.lightTangerine
+                          : Colors.white,
                     }}
                   >
-                    {cat.name}
-                  </Text>
-                </Pressable>
-              ))}
+                    <Text
+                      style={{
+                        color:
+                          selectedCategory === cat.id
+                            ? Colors.white
+                            : Colors.mediumGray,
+                        fontWeight: '600',
+                      }}
+                    >
+                      {cat.name}
+                    </Text>
+                  </Pressable>
+                ))}
             </View>
 
             {/* Product Type */}
@@ -516,7 +507,8 @@ export default function HomeScreen({ navigation }: any) {
             >
               <Pressable
                 onPress={() => {
-                  setSelectedCategory(0);
+                  // setSelectedCategory(0);
+                  setSelectedCategory(allProductsId);
                   setSelectedType(null);
                 }}
                 style={{ padding: 12 }}
