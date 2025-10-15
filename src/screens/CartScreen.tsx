@@ -19,7 +19,7 @@ interface Product {
   productType: string;
   stock: number;
   isNew?: boolean;
-  price: number; // <-- make sure this exists
+  price: number;
 }
 
 export default function CartScreen({ navigation }: any) {
