@@ -11,15 +11,19 @@ export default function AccountScreen({ navigation }: any) {
   console.log('Auth:', isLoggedIn);
 
   const handleLogout = async () => {
-    try {
-      await logout();
+    if (isLoggedIn) {
+      try {
+        await logout();
 
-      navigation.reset({
-        index: 0,
-        routes: [{ name: 'Welcome' }],
-      });
-    } catch (e) {
-      console.log('Logout failed:', e);
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'Welcome' }],
+        });
+      } catch (e) {
+        console.log('Logout failed:', e);
+      }
+    } else {
+      navigation.navigate('Welcome');
     }
   };
 
@@ -30,42 +34,44 @@ export default function AccountScreen({ navigation }: any) {
         <Text style={styles.headerTitle}>Account</Text>
       </View>
 
-      {/* User Profile Section */}
-      <View style={styles.profileSection}>
-        <Text style={styles.fullName}>Mohammad Abdulmanan</Text>
-      </View>
+      {isLoggedIn && (
+        <>
+          <View style={styles.profileSection}>
+            <Text style={styles.fullName}>Mohammad Abdulmanan</Text>
+          </View>
 
-      {/* Menu Sections */}
-      <View style={styles.menuContainer}>
-        {/* Box Row for Orders, Favourites, Addresses */}
-        <View style={styles.boxRow}>
-          <Pressable style={styles.boxItem}>
-            <Feather name="clipboard" size={20} color={Colors.charcoal} />
-            <Text style={styles.boxText}>Orders</Text>
-          </Pressable>
+          <View style={styles.menuContainer}>
+            <View style={styles.boxRow}>
+              <Pressable style={styles.boxItem}>
+                <Feather name="clipboard" size={20} color={Colors.charcoal} />
+                <Text style={styles.boxText}>Orders</Text>
+              </Pressable>
 
-          <Pressable style={styles.boxItem}>
-            <Feather name="heart" size={20} color={Colors.charcoal} />
-            <Text style={styles.boxText}>Favourites</Text>
-          </Pressable>
+              <Pressable style={styles.boxItem}>
+                <Feather name="heart" size={20} color={Colors.charcoal} />
+                <Text style={styles.boxText}>Favourites</Text>
+              </Pressable>
 
-          <Pressable style={styles.boxItem}>
-            <Feather name="map-pin" size={20} color={Colors.charcoal} />
-            <Text style={styles.boxText}>Addresses</Text>
-          </Pressable>
-        </View>
+              <Pressable style={styles.boxItem}>
+                <Feather name="map-pin" size={20} color={Colors.charcoal} />
+                <Text style={styles.boxText}>Addresses</Text>
+              </Pressable>
+            </View>
 
-        <Pressable style={styles.menuItem}>
-          <Feather name="user" size={24} color={Colors.charcoal} />
-          <Text style={styles.menuText}>View profile</Text>
-          <Feather name="chevron-right" size={20} color={Colors.grayBar2} />
-        </Pressable>
-      </View>
+            <Pressable style={styles.menuItem}>
+              <Feather name="user" size={24} color={Colors.charcoal} />
+              <Text style={styles.menuText}>View profile</Text>
+              <Feather name="chevron-right" size={20} color={Colors.grayBar2} />
+            </Pressable>
+          </View>
+        </>
+      )}
 
-      {/* Logout Button */}
       <View style={styles.bottomSection}>
         <Pressable onPress={handleLogout} style={styles.logoutButton}>
-          <Text style={styles.logoutText}>Log out</Text>
+          <Text style={styles.logoutText}>
+            {isLoggedIn ? 'Log out' : 'Login | Sign Up'}
+          </Text>
         </Pressable>
         <Text style={styles.versionText}>Version 1.0</Text>
       </View>
@@ -140,6 +146,7 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '600',
   },
+  infoText: { fontSize: 14, color: Colors.grayBar2, marginBottom: 12 },
   versionText: {
     fontSize: 14,
     color: Colors.mediumGray,

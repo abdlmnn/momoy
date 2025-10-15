@@ -16,7 +16,7 @@ import { Context } from '../contexts/Context';
 const Tab = createBottomTabNavigator();
 
 export default function BottomNavigator() {
-  const { cart = [] } = useContext(Context) || {};
+  const { cart = [], isLoggedIn } = useContext(Context) || {};
 
   return (
     <Tab.Navigator
@@ -73,7 +73,7 @@ export default function BottomNavigator() {
                 size={22}
                 color={focused ? Colors.darkTangerine : Colors.grayBar}
               />
-              {cart.length > 0 && (
+              {cart.length > 0 && isLoggedIn && (
                 <View
                   style={{
                     position: 'absolute',

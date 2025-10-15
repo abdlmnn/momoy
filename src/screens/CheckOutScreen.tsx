@@ -271,7 +271,7 @@ const styles = StyleSheet.create({
   totalAmount: { fontSize: 16, fontWeight: '500', color: Colors.charcoal },
   checkoutButton: {
     backgroundColor: Colors.darkTangerine,
-    paddingVertical: 16,
+    paddingVertical: 14,
     borderRadius: 30,
     alignItems: 'center',
     marginBottom: 5,

@@ -22,6 +22,7 @@ export default function CartScreen({ navigation }: any) {
     updateCartItem,
     removeFromCart,
     clearCart,
+    isLoggedIn,
   } = useContext(Context) || {};
 
   const increaseQty = (inventoryId: number, cartLineId: number) => {
@@ -59,7 +60,7 @@ export default function CartScreen({ navigation }: any) {
       {/* Header */}
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Cart</Text>
-        {cart.length > 0 && (
+        {cart.length > 0 && isLoggedIn && (
           <Pressable onPress={clearCarts} style={styles.clearButton}>
             <Text style={styles.clearText}>Clear Cart</Text>
           </Pressable>
@@ -67,17 +68,18 @@ export default function CartScreen({ navigation }: any) {
       </View>
 
       <View style={styles.content}>
-        {loadingCart ? (
+        {loadingCart && isLoggedIn ? (
           <View
             style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
           >
             <ActivityIndicator size="large" color={Colors.lightTangerine} />
           </View>
-        ) : cart.filter((item: any) => item.inventory).length === 0 ? (
+        ) : cart.filter((item: any) => item.inventory).length === 0 &&
+          isLoggedIn ? (
           <View style={styles.emptyCart}>
             <Text style={styles.emptyText}>Your cart is empty.</Text>
           </View>
-        ) : (
+        ) : isLoggedIn ? (
           <FlatList
             data={validCart}
             keyExtractor={item => item.id.toString()}
@@ -135,12 +137,30 @@ export default function CartScreen({ navigation }: any) {
               </View>
             )}
           />
+        ) : (
+          <View style={styles.emptyCart}>
+            <Text style={styles.emptyText}>You must be logged in.</Text>
+          </View>
         )}
       </View>
 
-      {cart.filter((item: any) => item.inventory).length > 0 && (
+      {cart.filter((item: any) => item.inventory).length > 0 && isLoggedIn && (
         <View style={styles.footer}>
-          <Text style={styles.totalText}>Total: ₱ {totalPrice.toFixed(2)}</Text>
+          <View
+            style={[
+              {
+                // borderWidth: 1,
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                paddingVertical: 12,
+                paddingHorizontal: 6,
+              },
+            ]}
+          >
+            <Text style={styles.totalText}>Total</Text>
+            <Text style={styles.totalText}>₱ {totalPrice.toFixed(2)}</Text>
+          </View>
           <Pressable
             onPress={() => navigation.navigate('CheckOut', { cart: validCart })}
             style={styles.checkoutButton}
@@ -165,15 +185,17 @@ const styles = StyleSheet.create({
   },
   headerTitle: { fontSize: 20, fontWeight: '700', color: Colors.charcoal },
   clearButton: {
-    backgroundColor: Colors.lightTangerine,
+    // backgroundColor: Colors.lightTangerine,
     paddingHorizontal: 12,
-    paddingVertical: 6,
+    paddingVertical: 8,
     borderRadius: 6,
+    borderWidth: 1,
+    borderColor: Colors.charcoal,
   },
-  clearText: { color: Colors.white, fontWeight: '600' },
+  clearText: { color: Colors.charcoal, fontWeight: '600' },
   content: { flex: 1, paddingHorizontal: 16 },
   emptyCart: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  emptyText: { fontSize: 16, color: Colors.grayBar2 },
+  emptyText: { fontSize: 14, color: Colors.grayBar2 },
   cartItem: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -205,22 +227,27 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   footer: {
-    padding: 16,
-    borderTopWidth: 0.5,
-    borderColor: Colors.grayBar2,
+    paddingHorizontal: 16,
+    paddingVertical: 6,
     backgroundColor: Colors.white,
+    elevation: 6,
+    borderTopWidth: 0.2,
+    borderColor: Colors.light,
+    borderTopLeftRadius: 25,
+    borderTopRightRadius: 25,
   },
   totalText: {
-    fontSize: 18,
-    fontWeight: '700',
-    marginBottom: 12,
+    fontSize: 16,
+    fontWeight: '500',
+    // marginBottom: 14,
     color: Colors.charcoal,
   },
   checkoutButton: {
     backgroundColor: Colors.darkTangerine,
     paddingVertical: 14,
-    borderRadius: 8,
+    borderRadius: 30,
     alignItems: 'center',
+    marginBottom: 14,
   },
-  checkoutText: { color: Colors.white, fontWeight: '700', fontSize: 16 },
+  checkoutText: { color: Colors.white, fontWeight: '600', fontSize: 16 },
 });
