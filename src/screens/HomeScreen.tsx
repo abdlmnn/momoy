@@ -301,8 +301,9 @@ export default function HomeScreen({ navigation }: any) {
                   {/* Left: Image Placeholder */}
                   <View
                     style={{
-                      width: 80,
-                      height: 80,
+                      // 80 x 80
+                      width: 100,
+                      height: 100,
                       borderRadius: 4,
                       justifyContent: 'center',
                       alignItems: 'center',

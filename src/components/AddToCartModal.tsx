@@ -84,7 +84,9 @@ export const AddToCartModal = ({
               />
 
               <View style={{ flex: 1, paddingHorizontal: 10, gap: 4 }}>
-                <Text style={styles.name}>{product.name}</Text>
+                <Text style={[styles.name, { textTransform: 'uppercase' }]}>
+                  {product.name}
+                </Text>
 
                 <Text style={styles.price}>₱ {selectedVariant?.price}</Text>
 

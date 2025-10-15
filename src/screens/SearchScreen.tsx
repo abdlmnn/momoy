@@ -116,8 +116,8 @@ export default function SearchScreen() {
             >
               <View
                 style={{
-                  width: 80,
-                  height: 80,
+                  width: 100,
+                  height: 100,
                   borderRadius: 4,
                   justifyContent: 'center',
                   alignItems: 'center',
@@ -165,6 +165,7 @@ export default function SearchScreen() {
                     fontSize: 14,
                     fontWeight: '700',
                     color: Colors.charcoal,
+                    textTransform: 'uppercase',
                   }}
                 >
                   {item.name}
