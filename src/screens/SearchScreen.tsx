@@ -10,7 +10,7 @@ import { SwitchImages } from '../components/SwitchImages';
 import { ProductWithInventories, Variant } from '../types/types';
 
 export default function SearchScreen() {
-  const { products = [], isLoggedIn } = useContext(Context) || {};
+  const { products = [], addToCart } = useContext(Context) || {};
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredProducts, setFilteredProducts] = useState<
     ProductWithInventories[]
@@ -55,12 +55,26 @@ export default function SearchScreen() {
     );
   };
 
-  const handleAddToCart = (data: any) => {
-    console.log('Added to cart:', data);
+  const handleAddToCart = async (data: any) => {
+    if (!data?.variant?.id) return;
+
+    try {
+      await addToCart?.(data.variant.id, data.quantity ?? 1);
+      setModalVisible(false);
+    } catch (err) {
+      console.log('Error adding to cart:', err);
+    }
   };
 
   return (
-    <View style={{ flex: 1, padding: 16, backgroundColor: '#fff' }}>
+    <View
+      style={{
+        flex: 1,
+        paddingHorizontal: 16,
+        paddingTop: 16,
+        backgroundColor: '#fff',
+      }}
+    >
       <View
         style={{
           flexDirection: 'row',
@@ -94,7 +108,7 @@ export default function SearchScreen() {
         data={filteredProducts}
         keyExtractor={(item: any) => item.id.toString()}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 20 }}
+        // contentContainerStyle={{ paddingBottom: 20 }}
         renderItem={({ item }) => {
           const inventories = item.inventories;
           const prices = inventories.map((v: any) => v.price);

@@ -50,6 +50,7 @@ export default function HomeScreen({ navigation }: any) {
     categories = [],
     loadingData,
     refreshData,
+    addToCart,
   } = useContext(Context) || {};
 
   const [selectedCategory, setSelectedCategory] = useState<number>(0);
@@ -58,10 +59,6 @@ export default function HomeScreen({ navigation }: any) {
 
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
   const [modalVisible, setModalVisible] = useState(false);
-
-  const handleAddToCart = (data: any) => {
-    console.log('Added to cart:', data);
-  };
 
   useEffect(() => {
     refreshData?.();
@@ -109,6 +106,16 @@ export default function HomeScreen({ navigation }: any) {
 
     return hasVariants && matchesCategory && matchesType;
   });
+
+  const handleAddToCart = async (data: any) => {
+    if (!data?.variant?.id) return;
+    try {
+      await addToCart?.(data.variant.id, data.quantity);
+      setModalVisible(false);
+    } catch (err) {
+      console.log('Error adding to cart:', err);
+    }
+  };
 
   const [address, setAddress] = useState<Address | null>(null);
 
@@ -385,6 +392,7 @@ export default function HomeScreen({ navigation }: any) {
         onClose={() => setModalVisible(false)}
         product={selectedProduct}
         onAddToCart={handleAddToCart}
+        isLoggedIn={isLoggedIn}
       />
 
       {/* Filter Modal */}

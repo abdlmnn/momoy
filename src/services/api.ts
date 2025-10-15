@@ -109,4 +109,64 @@ export async function getUserAddress(): Promise<Address[]> {
   }
 }
 
+export async function getCart() {
+  try {
+    const res = await authApi.get(`/api/cart/`);
+    console.log('Fetched Cart:', res.data);
+    return res.data;
+  } catch (error) {
+    console.log('Error Fetching Cart:', error);
+    throw error;
+  }
+}
+
+export async function addToCart(inventoryId: number, quantity: number = 1) {
+  try {
+    const res = await authApi.post(`/api/cart/`, {
+      inventory: inventoryId,
+      quantity,
+    });
+    console.log('Added to Cart:', res.data);
+    return res.data;
+  } catch (error) {
+    console.log('Error Adding to Cart:', error);
+    throw error;
+  }
+}
+
+export async function updateCartItem(cartLineId: number, quantity: number) {
+  try {
+    const res = await authApi.put(`/api/cart/line/${cartLineId}/`, {
+      quantity,
+    });
+    console.log('Updated Cart Item:', res.data);
+    return res.data;
+  } catch (error) {
+    console.log('Error Updating Cart Item:', error);
+    throw error;
+  }
+}
+
+export async function removeCartItem(cartLineId: number) {
+  try {
+    const res = await authApi.delete(`/api/cart/line/${cartLineId}/`);
+    console.log('Removed from Cart:', cartLineId);
+    return res.data;
+  } catch (error) {
+    console.log('Error Removing from Cart:', error);
+    throw error;
+  }
+}
+
+export async function clearCart() {
+  try {
+    const res = await authApi.delete(`/api/cart/clear/`);
+    console.log('Cleared Cart:', res.data);
+    return res.data;
+  } catch (error) {
+    console.log('Error Clearing Cart:', error);
+    throw error;
+  }
+}
+
 export default api;

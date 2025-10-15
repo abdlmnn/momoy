@@ -16,12 +16,21 @@ import { API_URL } from '@env';
 
 const screenHeight = Dimensions.get('window').height;
 
+type AddToCartModalProps = {
+  visible: boolean;
+  onClose: () => void;
+  product: any;
+  onAddToCart: (data: { product: any; variant: any; quantity: number }) => void;
+  isLoggedIn?: boolean;
+};
+
 export const AddToCartModal = ({
   visible,
   onClose,
   product,
   onAddToCart,
-}: any) => {
+  isLoggedIn,
+}: AddToCartModalProps) => {
   const isReady = !!product;
 
   const [selectedVariant, setSelectedVariant] = useState<any>(
@@ -48,7 +57,12 @@ export const AddToCartModal = ({
   }, [selectedVariant, product]);
 
   const handleAdd = () => {
-    if (selectedVariant) {
+    if (!isLoggedIn) {
+      console.log('Please log in to add items to cart.');
+      return;
+    }
+
+    if (selectedVariant && product) {
       onAddToCart({ product, variant: selectedVariant, quantity });
       onClose();
     }

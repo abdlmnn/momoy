@@ -12,9 +12,17 @@ import Images from '../constants/Images';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { isExpired } from '../services/expiredToken';
 
-import { getProducts } from '../services/api';
-import { getCategories } from '../services/api';
-import { getInventory } from '../services/api';
+import {
+  getProducts,
+  getCategories,
+  getInventory,
+  getUserAddress,
+  getCart,
+  addToCart,
+  updateCartItem,
+  removeCartItem,
+  clearCart,
+} from '../services/api';
 
 type formData = {
   email: string;
@@ -29,6 +37,7 @@ type formData = {
 type Product = any;
 type Category = any;
 type Inventory = any;
+type CartItem = any;
 
 type ContextType = {
   formData: formData;
@@ -59,9 +68,16 @@ type ContextType = {
   products: Product[];
   categories: Category[];
   inventories: Inventory[];
-
   loadingData: boolean;
   refreshData: () => Promise<void>;
+
+  cart: CartItem[];
+  loadingCart: boolean;
+  fetchCart: () => Promise<void>;
+  addToCart: (inventoryId: number, quantity?: number) => Promise<void>;
+  updateCartItem: (itemId: number, quantity: number) => Promise<void>;
+  removeFromCart: (itemId: number) => Promise<void>;
+  clearCart: () => Promise<void>;
 };
 
 const initialFormData = {
@@ -100,7 +116,9 @@ export default function Provider({ children }: any) {
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [inventories, setInventories] = useState<Inventory[]>([]);
+  const [cart, setCart] = useState<CartItem[]>([]);
 
+  const [loadingCart, setLoadingCart] = useState(false);
   const [loadingData, setLoadingData] = useState(false);
 
   const isLoggedIn =
@@ -122,6 +140,69 @@ export default function Provider({ children }: any) {
       console.log('Error fetching data:', error);
     } finally {
       setLoadingData(false);
+    }
+  };
+
+  const fetchCart = async () => {
+    if (!accessToken) return;
+    try {
+      setLoadingCart(true);
+      const cartData = await getCart();
+      setCart(cartData?.lines || []);
+    } catch (error) {
+      console.log('Error fetching cart:', error);
+    } finally {
+      setLoadingCart(false);
+    }
+  };
+
+  const handleAddToCart = async (inventoryId: number, quantity = 1) => {
+    if (!accessToken) return;
+    try {
+      await addToCart(inventoryId, quantity);
+      await fetchCart();
+    } catch (error) {
+      console.log('Error adding to cart:', error);
+    }
+  };
+
+  const handleUpdateCartItem = async (itemId: number, quantity: number) => {
+    if (!accessToken) return;
+
+    setCart(prevCart =>
+      prevCart.map(item => (item.id === itemId ? { ...item, quantity } : item)),
+    );
+
+    try {
+      await updateCartItem(itemId, quantity);
+      // await fetchCart();
+    } catch (error) {
+      console.log('Error updating cart item:', error);
+      fetchCart();
+    }
+  };
+
+  const handleRemoveFromCart = async (itemId: number) => {
+    if (!accessToken) return;
+
+    setCart(prevCart => prevCart.filter(item => item.id !== itemId));
+
+    try {
+      await removeCartItem(itemId);
+      // await fetchCart();
+    } catch (error) {
+      console.log('Error removing item from cart:', error);
+      fetchCart();
+    }
+  };
+
+  const handleClearCart = async () => {
+    setCart([]);
+    try {
+      await clearCart();
+    } catch (error) {
+      console.log('Error clearing cart:', error);
+      fetchCart();
     }
   };
 
@@ -150,6 +231,10 @@ export default function Provider({ children }: any) {
   useEffect(() => {
     refreshData();
   }, []);
+
+  useEffect(() => {
+    if (isLoggedIn) fetchCart();
+  }, [isLoggedIn]);
 
   useEffect(() => {
     if (isLoggedIn) refreshData();
@@ -205,9 +290,16 @@ export default function Provider({ children }: any) {
     products,
     categories,
     inventories,
-
     loadingData,
     refreshData,
+
+    cart,
+    loadingCart,
+    fetchCart,
+    addToCart: handleAddToCart,
+    updateCartItem: handleUpdateCartItem,
+    removeFromCart: handleRemoveFromCart,
+    clearCart: handleClearCart,
   };
 
   return <Context.Provider value={global}>{children}</Context.Provider>;
