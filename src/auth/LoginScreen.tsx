@@ -37,6 +37,8 @@ export default function LoginScreen({ navigation }: any) {
   const [loadingLogin, setLoadingLogin] = useState(false);
   const [loadingLink, setLoadingLink] = useState(false);
 
+  const [showPassword, setShowPassword] = useState(false);
+
   const [submittedPasswordLogin, setSubmittedPasswordLogin] = useState(false);
   const [submittedEmailLink, setSubmittedEmailLink] = useState(false);
 
@@ -280,6 +282,8 @@ export default function LoginScreen({ navigation }: any) {
                   }}
                   submitted={submittedPasswordLogin}
                   isValid={isPasswordValid}
+                  secureTextEntry={true}
+                  showPasswordToggle={true}
                 />
               </View>
             </View>

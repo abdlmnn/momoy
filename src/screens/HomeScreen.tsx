@@ -1,4 +1,11 @@
-import React, { useContext, useEffect, useState, useRef } from 'react';
+import React, {
+  useContext,
+  useEffect,
+  useState,
+  useRef,
+  useCallback,
+} from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 import {
   View,
   Text,
@@ -119,29 +126,53 @@ export default function HomeScreen({ navigation }: any) {
 
   const [address, setAddress] = useState<Address | null>(null);
 
-  useEffect(() => {
-    const fetchAddress = async () => {
-      try {
-        if (!isLoggedIn) return;
+  useFocusEffect(
+    useCallback(() => {
+      const fetchAddress = async () => {
+        try {
+          if (!isLoggedIn) return;
 
-        const data = await getUserAddress();
+          const data = await getUserAddress();
 
-        // console.log(data);
-
-        if (data.length > 0) {
-          const defaultAddress = data.find(addr => addr.is_default) || data[0];
-
-          setAddress(defaultAddress);
+          if (data.length > 0) {
+            const defaultAddress =
+              data.find(addr => addr.is_default) || data[0];
+            setAddress(defaultAddress);
+          }
+        } catch (error: any) {
+          if (error.response?.status !== 401) {
+            console.log('Failed to load address:', error);
+          }
         }
-      } catch (error: any) {
-        if (error.response?.status !== 401) {
-          console.log('Failed to load address:', error);
-        }
-      }
-    };
+      };
 
-    fetchAddress();
-  }, [isLoggedIn]);
+      fetchAddress();
+    }, [isLoggedIn]),
+  );
+
+  // useEffect(() => {
+  //   const fetchAddress = async () => {
+  //     try {
+  //       if (!isLoggedIn) return;
+
+  //       const data = await getUserAddress();
+
+  //       // console.log(data);
+
+  //       if (data.length > 0) {
+  //         const defaultAddress = data.find(addr => addr.is_default) || data[0];
+
+  //         setAddress(defaultAddress);
+  //       }
+  //     } catch (error: any) {
+  //       if (error.response?.status !== 401) {
+  //         console.log('Failed to load address:', error);
+  //       }
+  //     }
+  //   };
+
+  //   fetchAddress();
+  // }, [isLoggedIn]);
 
   return (
     <View style={[StyleHome.container]}>

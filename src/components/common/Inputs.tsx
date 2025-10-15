@@ -16,6 +16,7 @@ import { styleInputs } from '../../styles/Inputs';
 import { StyleSignup } from '../../styles/SignupScreen';
 import Images from '../../constants/Images';
 import Colors from '../../constants/Colors';
+import Feather from 'react-native-vector-icons/Feather';
 
 interface InputProps {
   label: string;
@@ -27,6 +28,8 @@ interface InputProps {
   isValid?: boolean;
   bgColor: string;
   error: string;
+  secureTextEntry?: boolean;
+  showPasswordToggle?: boolean;
 }
 
 export default function Inputs({
@@ -39,8 +42,12 @@ export default function Inputs({
   isValid = true,
   bgColor,
   error,
+  secureTextEntry,
+  showPasswordToggle = false,
 }: InputProps) {
   const [isFocused, setIsFocused] = useState(false);
+
+  const [showPassword, setShowPassword] = useState(false);
 
   const labelAnim = useRef(new Animated.Value(value ? 1 : 0)).current;
 
@@ -122,10 +129,27 @@ export default function Inputs({
         onBlur={() => setIsFocused(false)}
         onChangeText={text => onChangeText(text)}
         value={value}
-        style={[StyleSignup.input]}
+        style={[
+          StyleSignup.input,
+          { paddingRight: showPasswordToggle ? 40 : 12 },
+        ]}
         keyboardType={keyboardType}
         autoCapitalize={autoCapitalize}
+        secureTextEntry={secureTextEntry && !showPassword}
       />
+
+      {showPasswordToggle && (
+        <TouchableOpacity
+          onPress={() => setShowPassword(!showPassword)}
+          style={{ position: 'absolute', right: 15, top: 14 }}
+        >
+          <Feather
+            name={showPassword ? 'eye' : 'eye-off'}
+            size={22}
+            color={Colors.gray}
+          />
+        </TouchableOpacity>
+      )}
 
       {/* {showError && (
         <Text

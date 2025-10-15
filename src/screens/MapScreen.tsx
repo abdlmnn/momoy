@@ -39,7 +39,7 @@ export default function MapScreen({ navigation }: any) {
 
   const fetchUserAddresses = async () => {
     try {
-      const res = await authApi.get(`/auth/addresses`);
+      const res = await authApi.get(`/auth/addresses/`);
 
       const addresses = res.data;
       console.log('Fetched addresses', addresses);

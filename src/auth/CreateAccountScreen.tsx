@@ -337,6 +337,8 @@ export default function CreateAccountScreen({ navigation }: any) {
                     }}
                     submitted={submitted}
                     isValid={isPasswordValid}
+                    secureTextEntry={true}
+                    showPasswordToggle={true}
                   />
                 </View>
               )}
