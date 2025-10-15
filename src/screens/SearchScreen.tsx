@@ -123,8 +123,8 @@ export default function SearchScreen() {
                 alignItems: 'center',
                 backgroundColor: Colors.white,
                 paddingVertical: 20,
-                borderBottomWidth: 0.4,
-                borderColor: Colors.grayBar2,
+                borderBottomWidth: 0.2,
+                borderColor: Colors.gray,
                 position: 'relative',
               }}
             >

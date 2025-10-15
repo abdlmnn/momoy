@@ -14,6 +14,7 @@ import CreateAccountScreen from '../auth/CreateAccountScreen';
 import GeocodeTest from '../components/TestGeoCode';
 import MapScreen from '../screens/MapScreen';
 import VerifyLoginLinkScreen from '../auth/VerifyLoginLinkScreen';
+import CheckOutScreen from '../screens/CheckOutScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -41,6 +42,8 @@ export default function StackNavigator({ initialRouteName }: any) {
         <Stack.Screen name="VerifyLogin" component={VerifyLoginLinkScreen} />
 
         <Stack.Screen name="Index" component={TabNavigator} />
+
+        <Stack.Screen name="CheckOut" component={CheckOutScreen} />
 
         <Stack.Screen name="Map" component={MapScreen} />
 

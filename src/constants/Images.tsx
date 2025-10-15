@@ -11,4 +11,7 @@ export default {
 
   img: require('../../assets/images/azu_1kg.png'),
   img2: require('../../assets/images/azu_20kg.png'),
+
+  cod: require('../../assets/images/cod.png'),
+  gcash: require('../../assets/images/gcash.png'),
 };

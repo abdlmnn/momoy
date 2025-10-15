@@ -17,6 +17,8 @@ import { Context } from '../contexts/Context';
 export default function CartScreen({ navigation }: any) {
   const {
     cart = [],
+    loadingCart,
+    fetchCart,
     updateCartItem,
     removeFromCart,
     clearCart,
@@ -35,6 +37,8 @@ export default function CartScreen({ navigation }: any) {
     if (newQty <= 0) removeFromCart?.(cartLineId);
     else updateCartItem?.(cartLineId, newQty);
   };
+
+  const validCart = cart.filter((item: any) => item.inventory);
 
   const totalPrice = cart.reduce(
     (sum: number, item: any) => sum + (item.price || 0) * item.quantity,
@@ -63,13 +67,19 @@ export default function CartScreen({ navigation }: any) {
       </View>
 
       <View style={styles.content}>
-        {cart.filter((item: any) => item.inventory).length === 0 ? (
+        {loadingCart ? (
+          <View
+            style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
+          >
+            <ActivityIndicator size="large" color={Colors.lightTangerine} />
+          </View>
+        ) : cart.filter((item: any) => item.inventory).length === 0 ? (
           <View style={styles.emptyCart}>
             <Text style={styles.emptyText}>Your cart is empty.</Text>
           </View>
         ) : (
           <FlatList
-            data={cart}
+            data={validCart}
             keyExtractor={item => item.id.toString()}
             showsVerticalScrollIndicator={false}
             renderItem={({ item }) => (
@@ -132,7 +142,7 @@ export default function CartScreen({ navigation }: any) {
         <View style={styles.footer}>
           <Text style={styles.totalText}>Total: ₱ {totalPrice.toFixed(2)}</Text>
           <Pressable
-            onPress={() => Alert.alert('Checkout', 'Proceed to payment')}
+            onPress={() => navigation.navigate('CheckOut', { cart: validCart })}
             style={styles.checkoutButton}
           >
             <Text style={styles.checkoutText}>Checkout</Text>
@@ -148,7 +158,7 @@ const styles = StyleSheet.create({
   header: {
     padding: 16,
     borderBottomWidth: 0.2,
-    borderColor: Colors.grayBar2,
+    borderColor: Colors.gray,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -169,8 +179,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: Colors.white,
     paddingVertical: 16,
-    borderBottomWidth: 0.4,
-    borderColor: Colors.grayBar2,
+    borderBottomWidth: 0.2,
+    borderColor: Colors.light,
   },
   itemImage: { width: 60, height: 60, borderRadius: 4, marginRight: 12 },
   itemDetails: { flex: 1, gap: 4 },
