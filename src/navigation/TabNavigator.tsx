@@ -1,5 +1,5 @@
 import { StatusBar, StyleSheet, Text, View } from 'react-native';
-import React from 'react';
+import React, { useContext } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import HomeScreen from '../screens/HomeScreen';
 import CartScreen from '../screens/CartScreen';
@@ -11,10 +11,13 @@ import Lucide from 'react-native-vector-icons/Lucide';
 import SearchScreen from '../screens/SearchScreen';
 import AccountScreen from '../screens/AccountScreen';
 import MapScreen from '../screens/MapScreen';
+import { Context } from '../contexts/Context';
 
 const Tab = createBottomTabNavigator();
 
 export default function BottomNavigator() {
+  const { cart = [] } = useContext(Context) || {};
+
   return (
     <Tab.Navigator
       screenOptions={{
@@ -59,11 +62,43 @@ export default function BottomNavigator() {
         options={{
           tabBarLabel: 'Cart',
           tabBarIcon: ({ focused, size }) => (
-            <Feather
-              name="shopping-bag"
-              size={22}
-              color={focused ? Colors.darkTangerine : Colors.grayBar}
-            />
+            // <Feather
+            //   name="shopping-bag"
+            //   size={22}
+            //   color={focused ? Colors.darkTangerine : Colors.grayBar}
+            // />
+            <>
+              <Feather
+                name="shopping-bag"
+                size={22}
+                color={focused ? Colors.darkTangerine : Colors.grayBar}
+              />
+              {cart.length > 0 && (
+                <View
+                  style={{
+                    position: 'absolute',
+                    right: -6,
+                    top: -3,
+                    backgroundColor: Colors.red,
+                    borderRadius: 8,
+                    width: 16,
+                    height: 16,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}
+                >
+                  <Text
+                    style={{
+                      color: 'white',
+                      fontSize: 10,
+                      fontWeight: '700',
+                    }}
+                  >
+                    {cart.length > 99 ? '99+' : cart.length}
+                  </Text>
+                </View>
+              )}
+            </>
           ),
         }}
       />

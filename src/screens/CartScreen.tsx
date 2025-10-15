@@ -17,8 +17,6 @@ import { Context } from '../contexts/Context';
 export default function CartScreen({ navigation }: any) {
   const {
     cart = [],
-    loadingCart,
-    fetchCart,
     updateCartItem,
     removeFromCart,
     clearCart,
@@ -65,13 +63,7 @@ export default function CartScreen({ navigation }: any) {
       </View>
 
       <View style={styles.content}>
-        {loadingCart ? (
-          <View
-            style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
-          >
-            <ActivityIndicator size="large" color={Colors.lightTangerine} />
-          </View>
-        ) : cart.filter((item: any) => item.inventory).length === 0 ? (
+        {cart.filter((item: any) => item.inventory).length === 0 ? (
           <View style={styles.emptyCart}>
             <Text style={styles.emptyText}>Your cart is empty.</Text>
           </View>
