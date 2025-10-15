@@ -30,6 +30,7 @@ import { Context } from '../contexts/Context';
 import { SwitchImages } from '../components/SwitchImages';
 import Images from '../constants/Images';
 import { API_URL } from '@env';
+import { AddToCartModal } from '../components/AddToCartModal';
 
 const productTypes = [
   'Dry Food',
@@ -47,7 +48,6 @@ export default function HomeScreen({ navigation }: any) {
     isLoggedIn,
     products = [],
     categories = [],
-    inventories = [],
     loadingData,
     refreshData,
   } = useContext(Context) || {};
@@ -55,6 +55,13 @@ export default function HomeScreen({ navigation }: any) {
   const [selectedCategory, setSelectedCategory] = useState<number>(0);
   const [filterVisible, setFilterVisible] = useState(false);
   const [selectedType, setSelectedType] = useState<string | null>(null);
+
+  const [selectedProduct, setSelectedProduct] = useState<any>(null);
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const handleAddToCart = (data: any) => {
+    console.log('Added to cart:', data);
+  };
 
   useEffect(() => {
     refreshData?.();
@@ -347,7 +354,10 @@ export default function HomeScreen({ navigation }: any) {
 
                       {/* Right: Add to Cart (+ button) */}
                       <Pressable
-                        onPress={() => console.log('Add to cart:', item.name)}
+                        onPress={() => {
+                          setSelectedProduct(item);
+                          setModalVisible(true);
+                        }}
                         style={{
                           backgroundColor: Colors.darkTangerine,
                           width: 30,
@@ -367,6 +377,14 @@ export default function HomeScreen({ navigation }: any) {
           />
         )}
       </View>
+
+      {/* Add to Cart Modal */}
+      <AddToCartModal
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+        product={selectedProduct}
+        onAddToCart={handleAddToCart}
+      />
 
       {/* Filter Modal */}
       <Modal

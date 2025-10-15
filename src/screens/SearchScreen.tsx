@@ -1,112 +1,109 @@
-import React, { useState, useRef } from 'react';
+import React, { useContext, useState, useRef, useEffect } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
-import {
-  View,
-  FlatList,
-  Text,
-  StyleSheet,
-  TextInput,
-  Pressable,
-} from 'react-native';
+import { View, FlatList, Text, TextInput, Pressable } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
 import Colors from '../constants/Colors';
-
-const products = [
-  {
-    id: 1,
-    name: 'AOZI DOG FOOD DRY - PUPPY',
-    price: 1200,
-    categoryId: 3,
-    productType: 'Dry Food',
-    isNew: true,
-    stock: 5,
-  },
-  {
-    id: 2,
-    name: 'AOZI DOG FOOD DRY GOLD - ADULT (SACK)',
-    price: 450,
-    categoryId: 4,
-    productType: 'Dry Food',
-    stock: 0,
-  },
-  {
-    id: 3,
-    name: 'Pet Collar',
-    price: 350,
-    categoryId: 2,
-    productType: 'Other Essentials',
-    stock: 3,
-    isNew: true,
-  },
-  {
-    id: 4,
-    name: 'Scratching Post',
-    price: 700,
-    categoryId: 1,
-    productType: 'Other Essentials',
-    stock: 10,
-    isNew: true,
-  },
-  {
-    id: 5,
-    name: 'Dog Bed',
-    price: 1500,
-    categoryId: 2,
-    productType: 'Other Essentials',
-    stock: 0,
-  },
-];
+import { Context } from '../contexts/Context';
+import { AddToCartModal } from '../components/AddToCartModal';
+import { API_URL } from '@env';
+import { SwitchImages } from '../components/SwitchImages';
+import { ProductWithInventories, Variant } from '../types/types';
 
 export default function SearchScreen() {
+  const { products = [], isLoggedIn } = useContext(Context) || {};
   const [searchQuery, setSearchQuery] = useState('');
-  const [filteredProducts, setFilteredProducts] = useState(products);
+  const [filteredProducts, setFilteredProducts] = useState<
+    ProductWithInventories[]
+  >([]);
   const searchInputRef = useRef<TextInput>(null);
 
+  const [selectedProduct, setSelectedProduct] = useState<any>(null);
+  const [modalVisible, setModalVisible] = useState(false);
+
   useFocusEffect(() => {
-    if (searchInputRef.current) {
-      searchInputRef.current.focus();
-    }
+    if (searchInputRef.current) searchInputRef.current.focus();
   });
 
-  const updateSearch = (query: string): void => {
+  useEffect(() => {
+    // Filter products with inventories when products change
+    const validProducts = products
+      .map((p: any) => ({ ...p, inventories: p.variants || [] }))
+      .filter((p: any) => p.inventories.length > 0);
+
+    setFilteredProducts(
+      searchQuery
+        ? validProducts.filter(p =>
+            p.name.toLowerCase().includes(searchQuery.toLowerCase()),
+          )
+        : validProducts,
+    );
+  }, [products]);
+
+  const updateSearch = (query: string) => {
     setSearchQuery(query);
-    if (query) {
-      setFilteredProducts(
-        products.filter(product =>
-          product.name.toLowerCase().includes(query.toLowerCase()),
-        ),
-      );
-    } else {
-      setFilteredProducts(products);
-    }
+
+    const validProducts = products
+      .map(p => ({ ...p, inventories: p.variants || [] }))
+      .filter(p => p.inventories.length > 0);
+
+    setFilteredProducts(
+      query
+        ? validProducts.filter(p =>
+            p.name.toLowerCase().includes(query.toLowerCase()),
+          )
+        : validProducts,
+    );
+  };
+
+  const handleAddToCart = (data: any) => {
+    console.log('Added to cart:', data);
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.searchContainer}>
+    <View style={{ flex: 1, padding: 16, backgroundColor: '#fff' }}>
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          backgroundColor: Colors.white,
+          borderRadius: 20,
+          paddingHorizontal: 10,
+          paddingVertical: 3,
+          marginBottom: 10,
+          borderWidth: 1,
+          borderColor: Colors.gray,
+        }}
+      >
         <Feather name="search" size={22} color={Colors.grayBar2} />
         <TextInput
           ref={searchInputRef}
-          placeholder="Search for pet food"
+          placeholder="Search for pet products"
           value={searchQuery}
           onChangeText={updateSearch}
-          style={styles.searchInput}
-          selectTextOnFocus={true}
+          style={{
+            flex: 1,
+            fontSize: 14,
+            color: Colors.charcoal,
+            marginLeft: 8,
+          }}
+          selectTextOnFocus
         />
       </View>
+
       <FlatList
         data={filteredProducts}
-        keyExtractor={item => item.id.toString()}
+        keyExtractor={(item: any) => item.id.toString()}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 20 }}
         renderItem={({ item }) => {
-          const isOutOfStock = item.stock === 0;
+          const inventories = item.inventories;
+          const prices = inventories.map((v: any) => v.price);
+          const minPrice = Math.min(...prices);
+          const maxPrice = Math.max(...prices);
 
           return (
             <Pressable
-              onPress={() => {
-                console.log({ product: item });
-              }}
+              onPress={() => console.log({ product: item })}
               style={{
                 flexDirection: 'row',
                 alignItems: 'center',
@@ -117,20 +114,26 @@ export default function SearchScreen() {
                 position: 'relative',
               }}
             >
-              {/* Left: Image Placeholder */}
               <View
                 style={{
                   width: 80,
                   height: 80,
-                  backgroundColor: Colors.light,
                   borderRadius: 4,
                   justifyContent: 'center',
                   alignItems: 'center',
                   marginRight: 12,
                 }}
-              />
+              >
+                <SwitchImages
+                  images={inventories
+                    .filter((v: any) => v.image)
+                    .map((v: any) => ({
+                      image: `${API_URL}${v.image}`,
+                      isNew: v.is_new,
+                    }))}
+                />
+              </View>
 
-              {/* NEW Tag positioned absolute */}
               {item.isNew && (
                 <View
                   style={{
@@ -156,7 +159,6 @@ export default function SearchScreen() {
                 </View>
               )}
 
-              {/* Middle: Product Info */}
               <View style={{ flex: 1, gap: 5 }}>
                 <Text
                   style={{
@@ -175,18 +177,17 @@ export default function SearchScreen() {
                     alignItems: 'center',
                   }}
                 >
-                  <Text
-                    style={{
-                      fontSize: 14,
-                      color: Colors.charcoal,
-                    }}
-                  >
-                    ₱{item.price}
+                  <Text style={{ fontSize: 14, color: Colors.charcoal }}>
+                    {minPrice === maxPrice
+                      ? `₱ ${minPrice}`
+                      : `₱ ${minPrice} - ${maxPrice}`}
                   </Text>
 
-                  {/* Right: Add to Cart (+ button) */}
                   <Pressable
-                    onPress={() => console.log('Add to cart:', item.name)}
+                    onPress={() => {
+                      setSelectedProduct(item);
+                      setModalVisible(true);
+                    }}
                     style={{
                       backgroundColor: Colors.darkTangerine,
                       width: 30,
@@ -204,48 +205,13 @@ export default function SearchScreen() {
           );
         }}
       />
+
+      <AddToCartModal
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+        product={selectedProduct}
+        onAddToCart={handleAddToCart}
+      />
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 16,
-    backgroundColor: '#fff',
-  },
-  searchContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: Colors.white,
-    borderRadius: 20,
-    paddingHorizontal: 10,
-    paddingVertical: 3,
-    marginBottom: 10,
-    borderWidth: 1,
-    borderColor: Colors.gray,
-  },
-  searchInput: {
-    flex: 1,
-    fontSize: 14,
-    color: Colors.charcoal,
-    marginLeft: 8,
-  },
-  productItem: {
-    padding: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ddd',
-  },
-  contentStyle: {
-    height: 40,
-    alignItems: 'center',
-  },
-  productName: {
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  productPrice: {
-    fontSize: 14,
-    color: '#888',
-  },
-});
