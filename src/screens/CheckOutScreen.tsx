@@ -8,30 +8,63 @@ import {
   StyleSheet,
   Image,
   Alert,
+  ActivityIndicator,
 } from 'react-native';
 import Colors from '../constants/Colors';
 import Images from '../constants/Images';
 import Feather from 'react-native-vector-icons/Feather';
 import { Context } from '../contexts/Context';
+import { createOrder, createPayment } from '../services/api';
 
-export default function CheckOutScreen({ route, navigation }: any) {
-  const cart = route.params?.cart || [];
+export default function CheckOutScreen({ navigation }: any) {
+  const { fetchCart, cart, refreshData } = useContext(Context)!;
 
   const [paymentMethod, setPaymentMethod] = useState<'COD' | 'Gcash' | null>(
     null,
   );
+
+  const [isPlacingOrder, setIsPlacingOrder] = useState(false);
 
   const totalPrice = cart.reduce(
     (sum: number, item: any) => sum + (Number(item.price) || 0) * item.quantity,
     0,
   );
 
-  const handlePlaceOrder = () => {
-    Alert.alert(
-      'Order Placed',
-      `Payment Method: ${paymentMethod}\nTotal: ₱${totalPrice.toFixed(2)}`,
-    );
-    navigation.goBack();
+  const handlePlaceOrder = async () => {
+    if (!paymentMethod) {
+      Alert.alert('Error', 'Please select a payment method.');
+      return;
+    }
+
+    setIsPlacingOrder(true);
+
+    try {
+      const order = await createOrder();
+
+      await createPayment(
+        order.id,
+        paymentMethod.toLowerCase() as 'cod' | 'gcash',
+      );
+
+      await refreshData();
+
+      if (paymentMethod === 'COD') {
+        navigation.replace('OrderSummary', {
+          order,
+          payment: {
+            method: 'cod',
+            status: 'pending',
+          },
+        });
+      } else if (paymentMethod === 'Gcash') {
+        // navigation.navigate('GcashPayment', { order, payment });
+        console.log('No screen');
+      }
+    } catch (error: any) {
+      console.error('Checkout Error:', error.response?.data || error.message);
+    } finally {
+      setIsPlacingOrder(false);
+    }
   };
 
   const renderCartItem = ({ item }: any) => (
@@ -158,8 +191,22 @@ export default function CheckOutScreen({ route, navigation }: any) {
             <Text style={styles.totalLabel}>Total</Text>
             <Text style={styles.totalAmount}>₱ {totalPrice.toFixed(2)}</Text>
           </View>
-          <Pressable style={styles.checkoutButton} onPress={handlePlaceOrder}>
-            <Text style={styles.checkoutText}>Place Order</Text>
+          <Pressable
+            style={[
+              styles.checkoutButton,
+              isPlacingOrder && {
+                backgroundColor: Colors.grayBar,
+                opacity: 0.8,
+              },
+            ]}
+            onPress={handlePlaceOrder}
+            disabled={isPlacingOrder}
+          >
+            {isPlacingOrder ? (
+              <ActivityIndicator color={Colors.white} />
+            ) : (
+              <Text style={styles.checkoutText}>Place Order</Text>
+            )}
           </Pressable>
         </View>
       )}
@@ -211,7 +258,12 @@ const styles = StyleSheet.create({
   },
   itemImage: { width: 80, height: 80, borderRadius: 6, marginRight: 12 },
   itemDetails: { flex: 1, justifyContent: 'center' },
-  itemName: { fontSize: 14, fontWeight: '700', color: Colors.charcoal },
+  itemName: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: Colors.charcoal,
+    textTransform: 'uppercase',
+  },
   itemPrice: { fontSize: 14, color: Colors.charcoal, marginTop: 4 },
 
   section: {

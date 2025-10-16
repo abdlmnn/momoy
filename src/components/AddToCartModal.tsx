@@ -38,7 +38,7 @@ export const AddToCartModal = ({
   );
 
   const [imageUri, setImageUri] = useState(
-    `${API_URL}${selectedVariant?.image || product?.image}`,
+    selectedVariant?.image || product?.image,
   );
 
   const [quantity, setQuantity] = useState(1);
@@ -52,7 +52,7 @@ export const AddToCartModal = ({
 
   useEffect(() => {
     if (selectedVariant || product?.image) {
-      setImageUri(`${API_URL}${selectedVariant?.image || product?.image}`);
+      setImageUri(selectedVariant?.image || product?.image);
     }
   }, [selectedVariant, product]);
 

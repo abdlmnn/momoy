@@ -68,10 +68,6 @@ export default function HomeScreen({ navigation }: any) {
   const [modalVisible, setModalVisible] = useState(false);
 
   useEffect(() => {
-    refreshData?.();
-  }, []);
-
-  useEffect(() => {
     if (categories && categories.length > 0) {
       const allCat = categories.find(c => c.name.toLowerCase().includes('all'));
 
@@ -149,30 +145,6 @@ export default function HomeScreen({ navigation }: any) {
       fetchAddress();
     }, [isLoggedIn]),
   );
-
-  // useEffect(() => {
-  //   const fetchAddress = async () => {
-  //     try {
-  //       if (!isLoggedIn) return;
-
-  //       const data = await getUserAddress();
-
-  //       // console.log(data);
-
-  //       if (data.length > 0) {
-  //         const defaultAddress = data.find(addr => addr.is_default) || data[0];
-
-  //         setAddress(defaultAddress);
-  //       }
-  //     } catch (error: any) {
-  //       if (error.response?.status !== 401) {
-  //         console.log('Failed to load address:', error);
-  //       }
-  //     }
-  //   };
-
-  //   fetchAddress();
-  // }, [isLoggedIn]);
 
   return (
     <View style={[StyleHome.container]}>
@@ -257,7 +229,7 @@ export default function HomeScreen({ navigation }: any) {
           <View style={{ flexDirection: 'row', gap: 10 }}>
             <FlatList
               data={categories.filter(
-                item => !['cat', 'dog'].includes(item.name.toLowerCase()), // ❌ hide Cat & Dog
+                item => !['cat', 'dog'].includes(item.name.toLowerCase()),
               )}
               keyExtractor={item => item.id.toString()}
               horizontal
@@ -352,7 +324,7 @@ export default function HomeScreen({ navigation }: any) {
                       images={inventories
                         .filter((v: any) => v.image)
                         .map((v: any) => ({
-                          image: `${API_URL}${v.image}`,
+                          image: v.image,
                           isNew: v.is_new,
                         }))}
                     />

@@ -126,6 +126,7 @@ export async function addToCart(inventoryId: number, quantity: number = 1) {
       inventory: inventoryId,
       quantity,
     });
+
     console.log('Added to Cart:', res.data);
     return res.data;
   } catch (error) {
@@ -165,6 +166,52 @@ export async function clearCart() {
     return res.data;
   } catch (error) {
     console.log('Error Clearing Cart:', error);
+    throw error;
+  }
+}
+
+export async function createOrder() {
+  try {
+    const res = await authApi.post(`/api/orders/`);
+    console.log('Created Order:', res.data);
+    return res.data.order;
+  } catch (error: any) {
+    console.error(
+      'Error Creating Order:',
+      error.response?.data || error.message,
+    );
+    throw error;
+  }
+}
+
+export async function createPayment(
+  orderId: number,
+  method: 'cod' | 'gcash',
+  proofImage?: any,
+) {
+  try {
+    const formData = new FormData();
+    formData.append('order', orderId.toString());
+    formData.append('method', method);
+    if (proofImage) {
+      formData.append('proof_image', {
+        uri: proofImage.uri,
+        name: proofImage.fileName || 'proof.jpg',
+        type: proofImage.type || 'image/jpeg',
+      });
+    }
+
+    const res = await authApi.post(`/api/payments/`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+
+    console.log('Created Payment:', res.data);
+    return res.data;
+  } catch (error: any) {
+    console.error(
+      'Error Creating Payment:',
+      error.response?.data || error.message,
+    );
     throw error;
   }
 }

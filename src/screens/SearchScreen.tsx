@@ -7,10 +7,10 @@ import { Context } from '../contexts/Context';
 import { AddToCartModal } from '../components/AddToCartModal';
 import { API_URL } from '@env';
 import { SwitchImages } from '../components/SwitchImages';
-import { ProductWithInventories, Variant } from '../types/types';
+import { ProductWithInventories } from '../types/types';
 
 export default function SearchScreen() {
-  const { products = [], addToCart } = useContext(Context) || {};
+  const { products = [], addToCart, isLoggedIn } = useContext(Context) || {};
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredProducts, setFilteredProducts] = useState<
     ProductWithInventories[]
@@ -57,9 +57,8 @@ export default function SearchScreen() {
 
   const handleAddToCart = async (data: any) => {
     if (!data?.variant?.id) return;
-
     try {
-      await addToCart?.(data.variant.id, data.quantity ?? 1);
+      await addToCart?.(data.variant.id, data.quantity);
       setModalVisible(false);
     } catch (err) {
       console.log('Error adding to cart:', err);
@@ -142,7 +141,7 @@ export default function SearchScreen() {
                   images={inventories
                     .filter((v: any) => v.image)
                     .map((v: any) => ({
-                      image: `${API_URL}${v.image}`,
+                      image: v.image,
                       isNew: v.is_new,
                     }))}
                 />
@@ -226,6 +225,7 @@ export default function SearchScreen() {
         onClose={() => setModalVisible(false)}
         product={selectedProduct}
         onAddToCart={handleAddToCart}
+        isLoggedIn={isLoggedIn}
       />
     </View>
   );

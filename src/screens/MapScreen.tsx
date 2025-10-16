@@ -124,11 +124,11 @@ export default function MapScreen({ navigation }: any) {
           />
         )}
 
-        <Marker
+        {/* <Marker
           coordinate={petShopLocation}
           title="Momoy Pet Supplies"
           pinColor="orange"
-        />
+        /> */}
       </MapView>
 
       {isLoggedIn && (

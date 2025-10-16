@@ -21,3 +21,9 @@ declare module 'react-native-vector-icons/Octicons' {
   const content: any;
   export default content;
 }
+
+declare module 'react-native-vector-icons/Ionicons' {
+  // import Ionicons from 'react-native-vector-icons/Ionicons';
+  const content: any;
+  export default content;
+}

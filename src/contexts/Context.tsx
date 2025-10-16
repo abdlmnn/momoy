@@ -127,11 +127,14 @@ export default function Provider({ children }: any) {
   const refreshData = async () => {
     try {
       setLoadingData(true);
+
       const [prodData, catData, invData] = await Promise.all([
         getProducts(),
         getCategories(),
         getInventory(),
       ]);
+
+      await fetchCart();
 
       setProducts(prodData);
       setCategories(catData);
@@ -148,7 +151,7 @@ export default function Provider({ children }: any) {
     try {
       setLoadingCart(true);
       const cartData = await getCart();
-      setCart(cartData?.lines || []);
+      setCart(cartData?.lines);
     } catch (error) {
       console.log('Error fetching cart:', error);
     } finally {
@@ -159,10 +162,21 @@ export default function Provider({ children }: any) {
   const handleAddToCart = async (inventoryId: number, quantity = 1) => {
     if (!accessToken) return;
     try {
-      await addToCart(inventoryId, quantity);
-      await fetchCart();
+      const addedItem = await addToCart(inventoryId, quantity);
+      // await fetchCart();
+      setCart(prevCart => {
+        const existing = prevCart.find(i => i.id === addedItem.id);
+        if (existing) {
+          return prevCart.map(i =>
+            i.id === addedItem.id ? { ...i, quantity: addedItem.quantity } : i,
+          );
+        } else {
+          return [...prevCart, addedItem];
+        }
+      });
     } catch (error) {
       console.log('Error adding to cart:', error);
+      await fetchCart();
     }
   };
 
@@ -178,7 +192,7 @@ export default function Provider({ children }: any) {
       // await fetchCart();
     } catch (error) {
       console.log('Error updating cart item:', error);
-      fetchCart();
+      await fetchCart();
     }
   };
 
@@ -192,7 +206,7 @@ export default function Provider({ children }: any) {
       // await fetchCart();
     } catch (error) {
       console.log('Error removing item from cart:', error);
-      fetchCart();
+      await fetchCart();
     }
   };
 
@@ -233,11 +247,16 @@ export default function Provider({ children }: any) {
   }, []);
 
   useEffect(() => {
-    if (isLoggedIn) fetchCart();
-  }, [isLoggedIn]);
+    const loadCart = async () => {
+      try {
+        await fetchCart();
+        console.log('Cart loaded');
+      } catch (error) {
+        console.log('Error loading cart:', error);
+      }
+    };
 
-  useEffect(() => {
-    if (isLoggedIn) refreshData();
+    if (isLoggedIn) loadCart();
   }, [isLoggedIn]);
 
   const setLocation = async (

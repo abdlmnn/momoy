@@ -20,4 +20,5 @@ export default {
   charcoal: '#212529',
   red: '#FF4526',
   borderBGColor: '#FAFAFA',
+  green: '#00C300',
 };

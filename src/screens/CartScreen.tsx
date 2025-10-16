@@ -162,7 +162,7 @@ export default function CartScreen({ navigation }: any) {
             <Text style={styles.totalText}>₱ {totalPrice.toFixed(2)}</Text>
           </View>
           <Pressable
-            onPress={() => navigation.navigate('CheckOut', { cart: validCart })}
+            onPress={() => navigation.navigate('CheckOut')}
             style={styles.checkoutButton}
           >
             <Text style={styles.checkoutText}>Checkout</Text>
@@ -206,7 +206,12 @@ const styles = StyleSheet.create({
   },
   itemImage: { width: 60, height: 60, borderRadius: 4, marginRight: 12 },
   itemDetails: { flex: 1, gap: 4 },
-  itemName: { fontSize: 14, fontWeight: '700', color: Colors.charcoal },
+  itemName: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: Colors.charcoal,
+    textTransform: 'uppercase',
+  },
   itemPrice: { fontSize: 14, color: Colors.charcoal },
   controlsColumn: {
     flexDirection: 'column',
