@@ -182,7 +182,7 @@ export const AddToCartModal = ({
             </View>
 
             {/* Quantity Selector */}
-            <View style={[styles.qtyRow]}>
+            {/* <View style={[styles.qtyRow]}>
               <Text style={styles.sectionTitle}>Quantity</Text>
               <View style={styles.qtyControl}>
                 <Pressable onPress={decreaseQty} style={styles.qtyButton}>
@@ -193,11 +193,53 @@ export const AddToCartModal = ({
                   <Feather name="plus" size={20} color={Colors.charcoal} />
                 </Pressable>
               </View>
+            </View> */}
+            <View style={[styles.qtyRow]}>
+              <Text style={styles.sectionTitle}>Quantity</Text>
+              <View style={styles.qtyControl}>
+                <Pressable
+                  onPress={decreaseQty}
+                  style={[styles.qtyButton, quantity === 1 && { opacity: 0.4 }]}
+                  disabled={quantity === 1}
+                >
+                  <Feather name="minus" size={20} color={Colors.charcoal} />
+                </Pressable>
+
+                <Text style={styles.qtyText}>{quantity}</Text>
+
+                <Pressable
+                  onPress={increaseQty}
+                  style={[
+                    styles.qtyButton,
+                    selectedVariant?.stock === 0 && { opacity: 0.4 },
+                  ]}
+                  disabled={
+                    selectedVariant?.stock === 0 ||
+                    quantity >= selectedVariant?.stock
+                  }
+                >
+                  <Feather name="plus" size={20} color={Colors.charcoal} />
+                </Pressable>
+              </View>
             </View>
 
             {/* Add to Cart Button */}
-            <Pressable style={styles.addBtn} onPress={handleAdd}>
+            {/* <Pressable style={styles.addBtn} onPress={handleAdd}>
               <Text style={styles.addBtnText}>Add to Cart</Text>
+            </Pressable> */}
+            <Pressable
+              style={[
+                styles.addBtn,
+                (selectedVariant?.stock === 0 || !isLoggedIn) && {
+                  backgroundColor: Colors.gray,
+                },
+              ]}
+              disabled={selectedVariant?.stock === 0 || !isLoggedIn}
+              onPress={handleAdd}
+            >
+              <Text style={styles.addBtnText}>
+                {selectedVariant?.stock === 0 ? 'Out of Stock' : 'Add to Cart'}
+              </Text>
             </Pressable>
           </View>
         )}

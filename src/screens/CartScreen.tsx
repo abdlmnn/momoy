@@ -25,9 +25,36 @@ export default function CartScreen({ navigation }: any) {
     isLoggedIn,
   } = useContext(Context) || {};
 
+  // const increaseQty = (inventoryId: number, cartLineId: number) => {
+  //   const item = cart.find((c: any) => c.id === cartLineId);
+  //   if (!item) return;
+  //   updateCartItem?.(cartLineId, item.quantity + 1);
+  // };
+
   const increaseQty = (inventoryId: number, cartLineId: number) => {
     const item = cart.find((c: any) => c.id === cartLineId);
     if (!item) return;
+
+    // Correct stock source
+    const stock = Number(item.inventory_detail?.stock ?? 0);
+
+    console.log(
+      'INCREASE DEBUG → qty:',
+      item.quantity,
+      'stock:',
+      stock,
+      'type of stock:',
+      typeof stock,
+    );
+
+    if (item.quantity >= stock) {
+      Alert.alert(
+        'Stock limit reached',
+        `Only ${stock} item(s) available for "${item.product_name}".`,
+      );
+      return;
+    }
+
     updateCartItem?.(cartLineId, item.quantity + 1);
   };
 
@@ -125,10 +152,25 @@ export default function CartScreen({ navigation }: any) {
                     >
                       <Feather name="minus" size={14} color={Colors.charcoal} />
                     </Pressable>
+
                     <Text style={styles.quantityText}>{item.quantity}</Text>
-                    <Pressable
+
+                    {/* <Pressable
                       onPress={() => increaseQty(item.inventory.id, item.id)}
                       style={[styles.qtyButton, styles.addButton]}
+                    >
+                      <Feather name="plus" size={14} color={Colors.white} />
+                    </Pressable> */}
+                    <Pressable
+                      onPress={() => increaseQty(item.inventory, item.id)}
+                      style={[
+                        styles.qtyButton,
+                        styles.addButton,
+                        item.quantity >= item.inventory_detail?.stock && {
+                          opacity: 0.4,
+                        },
+                      ]}
+                      disabled={item.quantity >= item.inventory_detail?.stock}
                     >
                       <Feather name="plus" size={14} color={Colors.white} />
                     </Pressable>

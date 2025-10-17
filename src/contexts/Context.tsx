@@ -152,6 +152,7 @@ export default function Provider({ children }: any) {
       setLoadingCart(true);
       const cartData = await getCart();
       setCart(cartData?.lines);
+      console.log('CART DATA →', JSON.stringify(cartData.lines, null, 2));
     } catch (error) {
       console.log('Error fetching cart:', error);
     } finally {
