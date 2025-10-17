@@ -70,7 +70,7 @@ export default function OrderSummaryScreen({ route, navigation }: any) {
   const headerComponent = useMemo(
     () => (
       <View>
-        {/* <Text style={styles.title}>My Order</Text> */}
+        {/* <Text style={styles.h2}>Order Summary</Text> */}
 
         {/* Order Info */}
         <View style={styles.row}>
@@ -223,9 +223,19 @@ export default function OrderSummaryScreen({ route, navigation }: any) {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.white },
-  center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  center: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   emptyText: { fontSize: 16, color: Colors.grayBar },
-
+  h2: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: Colors.charcoal,
+    marginBottom: 16,
+    marginHorizontal: 16,
+  },
   title: {
     fontSize: 24,
     fontWeight: '700',
@@ -258,7 +268,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 0.2,
     borderBottomColor: Colors.gray,
   },
-  itemImage: { width: 90, height: 90, borderRadius: 6, marginRight: 12 },
+  itemImage: { width: 100, height: 100, borderRadius: 6, marginRight: 12 },
   itemName: {
     fontSize: 14,
     textTransform: 'uppercase',
